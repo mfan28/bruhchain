@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NodeManager — Blockchain Node</title>
+  <link rel="stylesheet" href="/static/styles/base.css">
+  <link rel="stylesheet" href="/static/styles/components.css">
+  <link rel="stylesheet" href="/static/styles/sections.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">⧫</span>
+          <span class="logo-text">NodeManager</span>
+        </div>
+        <span class="badge" id="chainStatus">● Live</span>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-section="overview">
+          <span class="nav-icon">📊</span> Overview
+        </button>
+        <button class="nav-item" data-section="transactions">
+          <span class="nav-icon">💳</span> Transactions
+        </button>
+        <button class="nav-item" data-section="blocks">
+          <span class="nav-icon">🧱</span> Blocks
+        </button>
+        <button class="nav-item" data-section="accounts">
+          <span class="nav-icon">👤</span> Accounts
+        </button>
+        <button class="nav-item" data-section="mining">
+          <span class="nav-icon">⛏️</span> Mining
+        </button>
+        <button class="nav-item" data-section="ipfs">
+          <span class="nav-icon">📦</span> IPFS
+        </button>
+        <button class="nav-item" data-section="cassandra">
+          <span class="nav-icon">🗄️</span> Cassandra
+        </button>
+        <button class="nav-item" data-section="nodes">
+          <span class="nav-icon">🌐</span> Nodes
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="node-info">
+          <span class="label">Height</span>
+          <span class="value" id="sidebarHeight">0</span>
+        </div>
+        <div class="node-info">
+          <span class="label">Pending TX</span>
+          <span class="value" id="sidebarPending">0</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Overview Section -->
+      <section id="section-overview" class="section active">
+        <div class="section-header">
+          <h1>Overview</h1>
+          <div class="header-actions">
+            <span class="live-indicator" id="liveIndicator">● Live</span>
+            <button class="btn btn-sm" onclick="refreshAll()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">🧱 Chain Height</div>
+            <div class="stat-value" id="statHeight">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">💳 Pending TX</div>
+            <div class="stat-value" id="statPending">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">📦 Total TX</div>
+            <div class="stat-value" id="statTotalTxs">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">👤 Accounts</div>
+            <div class="stat-value" id="statAccounts">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">🎯 Difficulty</div>
+            <div class="stat-value" id="statDifficulty">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">🔗 Node</div>
+            <div class="stat-value" id="statStatus">● Healthy</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>⏱ Recent Blocks</h2>
+          </div>
+          <div class="card-body" id="recentBlocksList">
+            <div class="loading">Waiting for blocks...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📊 Activity (last 20 blocks)</h2>
+          </div>
+          <div class="card-body" id="activityChart">
+            <div class="loading">No data yet...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transactions Section -->
+      <section id="section-transactions" class="section">
+        <div class="section-header">
+          <h1>💳 Transactions</h1>
+          <div class="header-actions">
+            <button class="btn btn-sm" onclick="refreshTransactions()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📤 Send Transaction</h2>
+          </div>
+          <div class="card-body">
+            <form id="txForm" class="form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>From Address</label>
+                  <input type="text" id="txFrom" placeholder="0x..." class="input mono" required>
+                </div>
+                <div class="form-group">
+                  <label>To Address</label>
+                  <input type="text" id="txTo" placeholder="0x..." class="input mono" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Nonce</label>
+                  <div style="display:flex;gap:8px;">
+                    <input type="number" id="txNonce" value="0" class="input" style="flex:1;">
+                    <button type="button" class="btn btn-sm" onclick="fetchNonce()" title="Auto-fetch nonce from account">📡 Get</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Action</label>
+                  <select id="txAction" class="input" onchange="updatePayloadPreset()">
+                    <option value="send_message">Send Message</option>
+                    <option value="create_account">Create Account</option>
+                    <option value="update_profile">Update Profile</option>
+                    <option value="set_online">Set Online</option>
+                    <option value="set_offline">Set Offline</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Payload Data (JSON)</label>
+                <textarea id="txPayload" class="input mono" rows="3">{"message": "Hello blockchain!"}</textarea>
+              </div>
+              <div class="form-group">
+                <label>Signature</label>
+                <input type="text" id="txSignature" placeholder="0x..." class="input mono">
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Transaction</button>
+            </form>
+            <div id="txResult" class="result-box" style="display:none"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📋 Recent Transactions</h2>
+          </div>
+          <div class="card-body" id="recentTxList">
+            <div class="loading">Loading...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>🔍 Lookup Transaction</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group" style="flex:1">
+                <input type="text" id="txLookupHash" placeholder="Transaction hash..." class="input mono">
+              </div>
+              <button class="btn" onclick="lookupTx()">🔍 Search</button>
+            </div>
+            <div id="txLookupResult" class="result-box" style="display:none"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>🧾 Transactions by Address</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group" style="flex:1">
+                <input type="text" id="txAddress" placeholder="Enter wallet address..." class="input mono">
+              </div>
+              <button class="btn" onclick="lookupAddressTxs('recent')">🔍 Search</button>
+            </div>
+            <div id="txAddressResult" class="result-box" style="display:none"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Blocks Section -->
+      <section id="section-blocks" class="section">
+        <div class="section-header">
+          <h1>🧱 Blocks</h1>
+          <div class="header-actions">
+            <button class="btn btn-sm" onclick="refreshBlocks()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="blocksStats">
+          <div class="stat-card">
+            <div class="stat-label">Total Blocks</div>
+            <div class="stat-value" id="blocksTotal">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Latest Height</div>
+            <div class="stat-value" id="blocksLatestHeight">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">⛏️ Last Miner</div>
+            <div class="stat-value stat-hash" id="blocksLastMiner">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">⏱ Last Block</div>
+            <div class="stat-value" id="blocksLastTime">—</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>🔍 Search Blocks</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-row" style="margin-bottom:12px;align-items:center;">
+              <div class="form-group" style="flex:0 0 200px;">
+                <label style="font-size:12px;color:var(--text-secondary);">By height</label>
+                <div style="display:flex;gap:8px;margin-top:4px;">
+                  <input type="number" id="blockHeight" placeholder="Height..." class="input" style="flex:1;">
+                  <button class="btn" onclick="lookupBlock()">Go</button>
+                </div>
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label style="font-size:12px;color:var(--text-secondary);">By hash</label>
+                <div style="display:flex;gap:8px;margin-top:4px;">
+                  <input type="text" id="blockHashSearch" placeholder="Block hash..." class="input mono">
+                  <button class="btn" onclick="searchBlockByHash()">🔍</button>
+                </div>
+              </div>
+              <div id="blocksNav" style="display:flex;gap:8px;align-items:end;margin-left:auto;">
+                <button class="btn btn-sm" id="blocksPrevBtn" onclick="blocksPage('prev')" disabled>◀ Prev</button>
+                <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;" id="blocksPageInfo">Page 1</span>
+                <button class="btn btn-sm" id="blocksNextBtn" onclick="blocksPage('next')">Next ▶</button>
+              </div>
+            </div>
+            <div id="blocksList">
+              <div class="loading">Loading blocks...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="blockDetailCard" style="display:none;">
+          <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+            <h2 id="blockDetailTitle">Block Details</h2>
+            <button class="btn btn-sm" onclick="closeBlockDetail()">✕ Close</button>
+          </div>
+          <div class="card-body" id="blockDetailBody"></div>
+        </div>
+      </section>
+
+      <!-- Accounts Section -->
+      <section id="section-accounts" class="section">
+        <div class="section-header">
+          <h1>👤 Accounts</h1>
+          <div class="header-actions">
+            <button class="btn btn-sm" onclick="refreshAccounts()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="accountsStats">
+          <div class="stat-card">
+            <div class="stat-label">Total Accounts</div>
+            <div class="stat-value" id="accountsTotal">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">🟢 Online</div>
+            <div class="stat-value" id="accountsOnline">—</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>🔍 View Account</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-row" style="margin-bottom:12px;">
+              <div class="form-group" style="flex:1">
+                <input type="text" id="accountAddress" placeholder="Wallet address..." class="input mono">
+              </div>
+              <button class="btn" onclick="lookupAccount()">🔍 Search</button>
+            </div>
+            <div id="accountResult" class="result-box" style="display:none"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📋 All Accounts</h2>
+          </div>
+          <div class="card-body" id="allAccountsList">
+            <div class="loading">Loading...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mining Section -->
+      <section id="section-mining" class="section">
+        <div class="section-header">
+          <h1>⛏️ Mining</h1>
+          <div class="header-actions">
+            <button class="btn btn-sm" onclick="refreshMiningStats()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="miningStats">
+          <div class="stat-card">
+            <div class="stat-label">🎯 Current Difficulty</div>
+            <div class="stat-value" id="miningDifficulty">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">🧱 Total Blocks Mined</div>
+            <div class="stat-value" id="miningTotalBlocks">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">💳 TX in Task</div>
+            <div class="stat-value" id="miningTxCount">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">📡 Hashrate</div>
+            <div class="stat-value" id="miningHashrate">—</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>🎛️ Difficulty Control</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-row" style="align-items:center;gap:16px;">
+              <div class="form-group" style="flex:1;">
+                <label style="font-size:12px;color:var(--text-secondary);">Difficulty (1-20, higher = harder)</label>
+                <div style="display:flex;gap:8px;margin-top:4px;">
+                  <input type="range" id="difficultySlider" min="1" max="20" value="5" style="flex:1;" oninput="document.getElementById('difficultyValue').textContent = this.value">
+                  <span id="difficultyValue" style="font-weight:700;font-size:18px;min-width:30px;text-align:center;font-family:var(--font-mono)">5</span>
+                  <button class="btn btn-sm" onclick="setDifficulty()">Set</button>
+                </div>
+              </div>
+            </div>
+            <div id="difficultyResult" class="result-box" style="display:none;margin-top:8px;"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>🔥 One-Click Mining</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Miner Address</label>
+              <input type="text" id="minerAddress" placeholder="0x..." class="input mono" value="0xminer1">
+            </div>
+            <button class="btn btn-primary btn-lg" id="mineBtn" onclick="startMining()" style="width:100%;font-size:1.2rem;padding:1rem;">
+              ⛏️ START MINING
+            </button>
+            <div id="miningStatus" class="result-box" style="display:none;margin-top:1rem"></div>
+            <div class="mining-progress" id="miningProgress" style="display:none">
+              <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+              <div class="progress-text">
+                <span id="hashrateText">0 hashes/s</span>
+                <span id="nonceText">Nonce: 0</span>
+              </div>
+            </div>
+            <div id="miningResult" class="result-box" style="display:none;margin-top:1rem"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- IPFS Section -->
+      <section id="section-ipfs" class="section">
+        <div class="section-header">
+          <h1>📦 IPFS</h1>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📤 Upload File</h2>
+          </div>
+          <div class="card-body">
+            <div class="ipfs-upload-zone" id="ipfsDropZone">
+              <div class="ipfs-upload-icon">☁️</div>
+              <div class="ipfs-upload-text">Drop file here or click to browse</div>
+              <div class="ipfs-upload-hint">Any file type — stored on IPFS</div>
+              <input type="file" id="ipfsFileInput" hidden>
+            </div>
+            <div id="ipfsUploadProgress" style="display:none;margin-top:12px;">
+              <div class="progress-bar"><div class="progress-fill" id="ipfsUploadFill" style="width:0%"></div></div>
+              <div class="progress-text" style="margin-top:6px;"><span id="ipfsUploadStatus">Uploading...</span></div>
+            </div>
+            <div id="ipfsUploadResult" class="result-box" style="display:none;margin-top:12px;"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📥 Retrieve File</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-row" style="margin-bottom:12px;">
+              <div class="form-group" style="flex:1">
+                <label style="font-size:12px;color:var(--text-secondary);">CID</label>
+                <input type="text" id="ipfsCid" placeholder="Qm... or bafy..." class="input mono">
+              </div>
+              <button class="btn" onclick="lookupIpfs()" style="align-self:end;">🔍 Preview</button>
+              <button class="btn btn-warning" onclick="downloadIpfs()" style="align-self:end;">⬇ Download</button>
+            </div>
+            <div id="ipfsResult" class="result-box" style="display:none;"></div>
+            <div id="ipfsImagePreview" style="display:none;margin-top:12px;text-align:center;">
+              <img id="ipfsPreviewImg" style="max-width:100%;max-height:400px;border-radius:var(--radius-sm);border:1px solid var(--border);" alt="IPFS image preview">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="ipfsHistoryCard" style="display:none;">
+          <div class="card-header">
+            <h2>📋 Upload History</h2>
+            <button class="btn btn-sm" onclick="clearIpfsHistory()">🗑 Clear</button>
+          </div>
+          <div class="card-body" id="ipfsHistoryList"></div>
+        </div>
+      </section>
+
+      <!-- Cassandra Section -->
+      <section id="section-cassandra" class="section">
+        <div class="section-header">
+          <h1>🗄️ Cassandra</h1>
+          <div class="header-actions">
+            <button class="btn btn-sm" onclick="refreshCassandra()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Browse Table</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group" style="flex:1">
+                <select id="cassandraTable" class="input" onchange="loadCassandraTable()">
+                  <option value="">— Select table —</option>
+                </select>
+              </div>
+              <div class="form-group" style="flex:0 0 120px">
+                <input type="number" id="cassandraLimit" value="20" min="1" max="100" class="input" placeholder="Limit">
+              </div>
+              <button class="btn" onclick="loadCassandraTable()">📋 Load</button>
+            </div>
+            <div id="cassandraResult" class="result-box" style="display:none"></div>
+            <div id="cassandraError" style="display:none;margin-top:10px;color:var(--red);font-size:13px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Nodes Section -->
+      <section id="section-nodes" class="section">
+        <div class="section-header">
+          <h1>🌐 Nodes</h1>
+          <div class="header-actions">
+            <button class="btn btn-sm" onclick="refreshNodes()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div class="stat-card">
+            <div class="stat-label">Total Nodes</div>
+            <div class="stat-value" id="nodesTotal">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Nodes</div>
+            <div class="stat-value" id="nodesActive">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Self ID</div>
+            <div class="stat-value stat-hash" id="nodesSelfId">—</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>➕ Register New Node</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group" style="flex:0 0 120px">
+                <label style="font-size:12px;color:var(--text-secondary);">Node ID</label>
+                <input type="text" id="newNodeId" placeholder="node-xxx" class="input mono">
+              </div>
+              <div class="form-group" style="flex:1">
+                <label style="font-size:12px;color:var(--text-secondary);">API URL (http://host:port)</label>
+                <input type="text" id="newNodeUrl" placeholder="http://192.168.1.100:8000" class="input mono">
+              </div>
+              <button class="btn btn-primary" onclick="registerNode()" style="align-self:end;">➕ Add Node</button>
+            </div>
+            <div id="nodeRegisterResult" class="result-box" style="display:none;margin-top:12px;"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>📋 Known Nodes</h2>
+          </div>
+          <div class="card-body">
+            <div id="nodesList">
+              <div class="loading">Loading nodes...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

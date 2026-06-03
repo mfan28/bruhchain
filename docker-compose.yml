@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra-node
+    ports:
+      - "9042:9042"  # CQL порт
+      - "7000:7000"  # Межнодовое взаимодействие (gossip)
+    environment:
+      - CASSANDRA_CLUSTER_NAME=BlockchainCluster
+      - CASSANDRA_NUM_TOKENS=256
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_SEEDS=${CASSANDRA_SEEDS:-cassandra-node}
+      - CASSANDRA_BROADCAST_ADDRESS=${CASSANDRA_BROADCAST_ADDRESS:-}          
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+      - ./cassandra/init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ipfs:
+    image: ipfs/kubo:latest
+    container_name: ipfs-node
+    ports:
+      - "4001:4001"   # P2P
+      - "5001:5001"   # API
+      - "8080:8080"   # Gateway
+    environment:
+      - IPFS_PROFILE=server
+    volumes:
+      - ipfs_data:/data/ipfs
+      - ./ipfs/staging:/export
+    healthcheck:
+      test: ["CMD", "ipfs", "id"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ipfs-cluster:
+    image: ipfs/ipfs-cluster:latest
+    container_name: ipfs-cluster
+    ports:
+      - "9095:9095"   # Cluster API
+      - "9096:9096"   # Cluster REST API
+    environment:
+      - CLUSTER_IPFSHTTP_NODEMULTIADDRESS=/dns4/ipfs-node/tcp/5001
+      - CLUSTER_RENDEZVOUS=blockchain-ipfs-cluster
+      - CLUSTER_PEER_ADDRESS=${CLUSTER_PEER_ADDRESS:-}
+    volumes:
+      - ipfs_cluster_data:/data/ipfs-cluster
+    depends_on:
+      ipfs:
+        condition: service_healthy
+
+  nodemanager:
+    build: ./nodeManager
+    container_name: nodemanager
+    ports:
+      - "${NODE_PORT:-8000}:8000"
+    env_file:
+      - ./nodeManager/.env
+    environment:
+      - NODE_ID=${NODE_ID:-}
+      - NODE_HOST=${NODE_HOST:-localhost}
+      - NODE_PORT=${NODE_PORT:-8000}
+      - SEED_PEERS=${SEED_PEERS:-}
+    volumes:
+      - ./nodeManager:/app
+      - state_data:/data
+    depends_on:
+      cassandra:
+        condition: service_healthy
+      ipfs:
+        condition: service_healthy
+
+volumes:
+  cassandra_data:
+  ipfs_data:
+  ipfs_cluster_data:
+  state_data:

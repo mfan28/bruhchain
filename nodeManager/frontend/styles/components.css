@@ -1,0 +1,85 @@
+/* ─── Card ─── */
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; overflow: hidden; }
+.card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.card-header h2 { font-size: 14px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px; }
+.card-body { padding: 20px; }
+
+/* ─── Stats Grid ─── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.stat-value { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.stat-hash { font-size: 13px; color: var(--accent); word-break: break-all; }
+
+/* ─── Buttons ─── */
+.btn {
+  background: var(--bg-hover); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 18px; color: var(--text-primary); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap;
+}
+.btn:hover { background: var(--border); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-warning { background: var(--orange-bg); border-color: var(--orange); color: var(--orange); }
+.btn-warning:hover { background: rgba(253,150,68,0.2); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-lg { padding: 12px 24px; font-size: 16px; }
+
+/* ─── Forms ─── */
+.form { display: flex; flex-direction: column; gap: 14px; }
+.form-row { display: flex; gap: 14px; }
+.form-row .form-group { flex: 1; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+.input {
+  background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 12px; color: var(--text-primary); font-size: 13px; font-family: inherit;
+  outline: none; transition: border 0.15s; width: 100%;
+}
+.input:focus { border-color: var(--accent); }
+.input.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+textarea.input { resize: vertical; min-height: 60px; }
+select.input { cursor: pointer; }
+
+/* ─── Table ─── */
+.cassandra-table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.5; }
+.cassandra-table th {
+  text-align: left; padding: 8px 10px; background: var(--bg-hover); color: var(--text-secondary);
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; font-size: 10px;
+  border-bottom: 2px solid var(--border); position: sticky; top: 0;
+}
+.cassandra-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); color: var(--text-primary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cassandra-table tr:hover td { background: var(--bg-hover); }
+.cassandra-table td.null { color: var(--text-muted); font-style: italic; }
+
+/* ─── Progress Bar ─── */
+.mining-progress { margin-top: 14px; padding: 14px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.progress-bar { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 4px; transition: width 0.3s; }
+.progress-text { display: flex; justify-content: space-between; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+/* ─── Result Box ─── */
+.result-box {
+  margin-top: 14px; background: var(--bg-primary); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px; font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; line-height: 1.6; overflow-x: auto; white-space: pre-wrap;
+  word-break: break-all; max-height: 400px; overflow-y: auto;
+}
+.result-box .key { color: var(--blue); }
+.result-box .string { color: var(--green); }
+.result-box .number { color: var(--orange); }
+.result-box .bool { color: var(--accent); }
+.result-box .null { color: var(--text-muted); }
+
+/* ─── Loading ─── */
+.loading { color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px; }
+
+/* ─── IPFS Upload Zone ─── */
+.ipfs-upload-zone {
+  border: 2px dashed var(--border); border-radius: var(--radius); padding: 40px 20px;
+  text-align: center; cursor: pointer; transition: all 0.2s; background: transparent;
+}
+.ipfs-upload-zone:hover { border-color: var(--accent); background: rgba(108,92,231,0.05); }
+.ipfs-upload-icon { font-size: 40px; margin-bottom: 12px; }
+.ipfs-upload-text { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.ipfs-upload-hint { font-size: 12px; color: var(--text-muted); }

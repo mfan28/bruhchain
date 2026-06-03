@@ -1,0 +1,35 @@
+/* ─── Block Timeline ─── */
+.block-timeline { display: flex; flex-direction: column; gap: 6px; }
+.block-timeline-item {
+  display: flex; align-items: center; gap: 12px; padding: 8px 12px;
+  border-radius: var(--radius-sm); background: var(--bg-primary);
+  border: 1px solid var(--border); transition: background 0.15s; cursor: pointer;
+}
+.block-timeline-item:hover { background: var(--bg-hover); }
+.block-timeline-height { font-size: 14px; font-weight: 700; color: var(--accent); min-width: 40px; font-family: 'JetBrains Mono', monospace; }
+.block-timeline-hash { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.block-timeline-stats { display: flex; gap: 12px; font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+.block-timeline-stats span { display: flex; align-items: center; gap: 4px; }
+
+/* ─── Activity Chart ─── */
+.activity-chart { display: flex; align-items: end; gap: 3px; height: 80px; padding: 12px 0; }
+.activity-bar { flex: 1; border-radius: 3px 3px 0 0; min-height: 4px; transition: height 0.3s; cursor: pointer; }
+.activity-bar:hover { opacity: 0.8; transform: scaleY(1.05); transform-origin: bottom; }
+.activity-bar-block { background: linear-gradient(to top, var(--green), #00e5d9); }
+.activity-legend { display: flex; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--text-secondary); }
+.activity-legend span { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+/* ─── Block Detail ─── */
+.block-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.block-field { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.block-field-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.block-field-value { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-primary); word-break: break-all; line-height: 1.4; }
+
+/* ─── Account Card ─── */
+.account-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.account-card-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--bg-hover); border-bottom: 1px solid var(--border); }
+.account-address { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); font-weight: 600; }
+.account-status { font-size: 12px; font-weight: 600; }
+.account-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+.ac-label { color: var(--text-muted); min-width: 80px; display: inline-block; }
