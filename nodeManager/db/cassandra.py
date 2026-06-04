@@ -323,13 +323,14 @@ class CassandraDB:
         Возвращает True если успешно (блокировка не занята).
         """
         now = int(time.time())
-
         # Атомарная вставка — только если записи нет
+        query = SimpleStatement(
+        "INSERT INTO mining_locks (height, node_id, locked_at) VALUES (%s, %s, %s) IF NOT EXISTS",
+        consistency_level=ConsistencyLevel.QUORUM
+        )
         result = self.session.execute(
-            "INSERT INTO mining_locks (height, node_id, locked_at) "
-            "VALUES (%s, %s, %s) IF NOT EXISTS",
+            query,
             (height, node_id, now),
-            consistency_level=ConsistencyLevel.SERIAL
         )
         if result.one().applied:
             return True
@@ -338,9 +339,12 @@ class CassandraDB:
         row = result.one()
         if row and row.locked_at and (now - row.locked_at) >= 120:
             # Истекла — удаляем и пробуем ещё раз
-            self.session.execute(
-                "DELETE FROM mining_locks WHERE height = %s", (height,),
+            query = SimpleStatement(
+                "DELETE FROM mining_locks WHERE height = %s",
                 consistency_level=ConsistencyLevel.QUORUM
+            )
+            self.session.execute(
+                query, (height,)
             )
             return await self.acquire_mining_lock(height, node_id)
 
