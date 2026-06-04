@@ -16,7 +16,8 @@ if [ ! -f /data/ipfs/config ]; then
 
     ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001
     ipfs config Addresses.Gateway /ip4/0.0.0.0/tcp/8080
-    ipfs config --json Addresses.Announce '["/ip4/0.0.0.0/tcp/4001"]'
+    ipfs config Addresses.Listen '/ip4/0.0.0.0/tcp/4001'
+    ipfs config --json Addresses.Announce '["/ip4/192.168.1.72/tcp/4001"]'
 fi
 
 # Запускаем демон
