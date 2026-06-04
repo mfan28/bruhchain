@@ -45,9 +45,10 @@ services:
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
     healthcheck:
       test: ["CMD", "ipfs", "id"]
-      interval: 30s
+      interval: 15s
       timeout: 10s
-      retries: 5
+      retries: 10
+      start_period: 20s   # даём время на init + запуск демона
 
   ipfs-cluster:
     image: ipfs/ipfs-cluster:latest
@@ -69,6 +70,7 @@ services:
     depends_on:
       ipfs:
         condition: service_healthy
+    restart: always
 
   nodemanager:
     build: ./nodeManager

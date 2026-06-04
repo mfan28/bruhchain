@@ -30,6 +30,15 @@ fi
 # Отключаем публичную DHT — только приватная сеть
 ipfs config --json Routing.Type '"none"' 2>/dev/null || true
 
+# Отключаем AutoConf (он лезет в публичный интернет)
+ipfs config --json AutoConf.Enabled false 2>/dev/null || true
+
+# API и Gateway должны слушать на всех интерфейсах, не только localhost
+echo "🔧 Setting API to 0.0.0.0:5001..."
+ipfs config Addresses.API "/ip4/0.0.0.0/tcp/5001"
+echo "🔧 Setting Gateway to 0.0.0.0:8080..."
+ipfs config Addresses.Gateway "/ip4/0.0.0.0/tcp/8080"
+
 # Запускаем демон
 echo "🚀 Starting IPFS daemon..."
 exec ipfs daemon --migrate=true
