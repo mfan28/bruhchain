@@ -35,9 +35,14 @@ services:
       - "8080:8080"   # Gateway
     environment:
       - IPFS_PROFILE=server
+      - LIBP2P_FORCE_PNET=1                     # принудительно приватная сеть
+      - IPFS_BOOTSTRAP=${IPFS_BOOTSTRAP:-}       # свои пиры через запятую
     volumes:
       - ipfs_data:/data/ipfs
       - ./ipfs/staging:/export
+      - ./ipfs/swarm.key:/swarm/swarm.key:ro     # общий секрет сети
+      - ./ipfs/entrypoint.sh:/entrypoint.sh:ro   # кастомный entrypoint
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
     healthcheck:
       test: ["CMD", "ipfs", "id"]
       interval: 30s
@@ -48,12 +53,17 @@ services:
     image: ipfs/ipfs-cluster:latest
     container_name: ipfs-cluster
     ports:
-      - "9095:9095"   # Cluster API
+      - "9095:9095"   # Cluster API (libp2p)
       - "9096:9096"   # Cluster REST API
     environment:
       - CLUSTER_IPFSHTTP_NODEMULTIADDRESS=/dns4/ipfs-node/tcp/5001
-      - CLUSTER_RENDEZVOUS=blockchain-ipfs-cluster
+      - CLUSTER_RENDEZVOUS=blockchain-cluster
+      - CLUSTER_SECRET=${CLUSTER_SECRET:-}        # общий секрет кластера
       - CLUSTER_PEER_ADDRESS=${CLUSTER_PEER_ADDRESS:-}
+      - CLUSTER_REPLICATION_FACTOR_MIN=1         # ровно 1 копия файла
+      - CLUSTER_REPLICATION_FACTOR_MAX=1         # без репликации
+      - CLUSTER_ALLOCATION_STRATEGY=descend_free_space  # на ноду с макс. местом
+      - CLUSTER_MONITOR_PINGINTERVAL=5s
     volumes:
       - ipfs_cluster_data:/data/ipfs-cluster
     depends_on:

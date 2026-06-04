@@ -32,8 +32,16 @@
                │ Node 1   │  │ Node 2  │     (динамически)
                └─────────┘  └─────────┘
 ┌─────────────────────────────────────────┐
-│                IPFS                      │
-│         (файлы, аватарки, JSON)          │
+│                IPFS Cluster              │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐│
+│  │ IPFS 1   │  │ IPFS 2   │  │ IPFS 3   ││
+│  │ (Москва) │  │ (СПб)    │  │ (Екб)    ││
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘│
+│       │             │             │       │
+│  ┌────┴─────────────┴─────────────┴────┐  │
+│  │        ipfs-cluster (CRDT)          │  │
+│  │  файлы реплицируются по всем нодам  │  │
+│  └─────────────────────────────────────┘  │
 └─────────────────────────────────────────┘
 ```
 
@@ -62,9 +70,11 @@ docker compose up -d
 На **машине 1** (seed):
 ```yaml
 # docker-compose.yml
-environment:
-  CASSANDRA_SEEDS: cassandra-node
-  CASSANDRA_BROADCAST_ADDRESS: 192.168.1.72   # свой IP
+services:
+  cassandra:
+    environment:
+      CASSANDRA_SEEDS: cassandra-node
+      CASSANDRA_BROADCAST_ADDRESS: 192.168.1.72   # свой IP
 ```
 
 На **машине 2**:
@@ -85,6 +95,37 @@ docker compose up -d
 ```
 
 > **Важно:** `docker compose down -v` нужен только при первом подключении. После этого volumes не сбрасывать — данные сохраняются.
+
+### Настройка IPFS Cluster для 2+ нод
+
+IPFS работает в **приватной сети** — только ноды с одинаковым `swarm.key` видят друг друга.
+
+**Шаг 1: Запустить первую ноду**
+```bash
+docker compose up -d
+```
+
+**Шаг 2: Узнать PeerID первой ноды**
+```bash
+docker exec ipfs-node ipfs id -f '<id>'
+# → 12D3KooW...
+docker exec ipfs-cluster ipfs-cluster-service id
+# → 12D3KooX... (Cluster Peer ID)
+```
+
+**Шаг 3: Настроить `.env` на второй ноде**
+```dotenv
+CLUSTER_SECRET=c432818c79ac4e5aa122edfc9d80118f6976147c99334f79b8e4c0208f1f6efc  # тот же!
+IPFS_BOOTSTRAP=/dns4/192.168.1.72/tcp/4001/p2p/12D3KooW...  # PeerID первой ноды
+CLUSTER_PEER_ADDRESS=/dns4/192.168.1.72/tcp/9095/p2p/12D3KooX...  # Cluster Peer ID
+```
+
+**Шаг 4: Запустить вторую ноду**
+```bash
+docker compose up -d
+```
+
+Файлы, загруженные через любую ноду, автоматически реплицируются на все ноды кластера (репликация настраивается через `ipfs-cluster`).
 
 ---
 
@@ -165,7 +206,9 @@ blockchainbruhbruh/
 ├── cassandra/
 │   └── init-scripts/           # Инициализация Cassandra (пока пусто)
 ├── ipfs/
-│   └── staging/                # Staging для IPFS
+│   ├── staging/                # Staging для IPFS
+│   ├── swarm.key               # Приватный ключ IPFS сети
+│   └── entrypoint.sh           # Кастомный entrypoint (приватная сеть, bootstrap)
 └── nodeManager/
     ├── Dockerfile
     ├── requirements.txt
@@ -219,6 +262,9 @@ blockchainbruhbruh/
 | `NODE_HOST` | `localhost` | Внешний адрес ноды |
 | `NODE_PORT` | `8000` | Внешний порт ноды |
 | `SEED_PEERS` | `""` | Пиры (через запятую) |
+| `CLUSTER_SECRET` | `""` | Общий секрет ipfs-cluster (32 байта hex) |
+| `IPFS_BOOTSTRAP` | `""` | Bootstrap пиры IPFS (через запятую) |
+| `CLUSTER_PEER_ADDRESS` | `""` | Адрес пира ipfs-cluster для подключения |
 
 ---
 
