@@ -408,18 +408,66 @@
       <!-- IPFS Section -->
       <section id="section-ipfs" class="section">
         <div class="section-header">
-          <h1>📦 IPFS</h1>
+          <h1>📦 IPFS Cluster</h1>
+          <div class="header-actions">
+            <span class="live-indicator" id="ipfsLiveIndicator">● Connected</span>
+            <button class="btn btn-sm" onclick="refreshIpfsAll()">🔄 Refresh</button>
+          </div>
         </div>
 
+        <!-- Cluster Stats -->
+        <div class="stats-grid" id="ipfsClusterStats" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+          <div class="stat-card">
+            <div class="stat-label">Cluster Peers</div>
+            <div class="stat-value" id="ipfsPeersCount">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Online</div>
+            <div class="stat-value" id="ipfsPeersOnline" style="color:var(--green);">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Files (Allocations)</div>
+            <div class="stat-value" id="ipfsAllocCount">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Cluster Status</div>
+            <div class="stat-value" id="ipfsClusterHealth" style="font-size:14px;">—</div>
+          </div>
+        </div>
+
+        <!-- Peers Card -->
         <div class="card">
           <div class="card-header">
-            <h2>📤 Upload File</h2>
+            <h2>🌐 Cluster Peers</h2>
+          </div>
+          <div class="card-body" id="ipfsPeersList">
+            <div class="loading">Loading peers...</div>
+          </div>
+        </div>
+
+        <!-- Allocations Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2>📂 File Allocations</h2>
+            <div class="header-actions">
+              <input type="text" id="ipfsAllocFilter" placeholder="Filter by CID..." class="input mono" style="width:200px;font-size:12px;" oninput="renderIpfsAllocations()">
+            </div>
+          </div>
+          <div class="card-body" id="ipfsAllocationsList">
+            <div class="loading">Loading allocations...</div>
+          </div>
+        </div>
+
+        <!-- Upload Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2>📤 Upload to Cluster</h2>
           </div>
           <div class="card-body">
             <div class="ipfs-upload-zone" id="ipfsDropZone">
               <div class="ipfs-upload-icon">☁️</div>
               <div class="ipfs-upload-text">Drop file here or click to browse</div>
-              <div class="ipfs-upload-hint">Any file type — stored on IPFS</div>
+              <div class="ipfs-upload-hint">Any file type — stored via ipfs-cluster</div>
               <input type="file" id="ipfsFileInput" hidden>
             </div>
             <div id="ipfsUploadProgress" style="display:none;margin-top:12px;">
@@ -430,6 +478,7 @@
           </div>
         </div>
 
+        <!-- Lookup Card -->
         <div class="card">
           <div class="card-header">
             <h2>📥 Retrieve File</h2>
@@ -450,6 +499,7 @@
           </div>
         </div>
 
+        <!-- History Card -->
         <div class="card" id="ipfsHistoryCard" style="display:none;">
           <div class="card-header">
             <h2>📋 Upload History</h2>

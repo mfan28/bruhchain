@@ -1,7 +1,6 @@
 fastapi==0.115.0
 uvicorn==0.30.6
 cassandra-driver==3.29.1
-ipfshttpclient==0.8.0a2
 pydantic==2.9.2
 python-dotenv==1.0.1
 cryptography==43.0.1

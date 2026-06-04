@@ -40,8 +40,8 @@ document.querySelectorAll('.nav-item').forEach(btn => {
         break;
       }
       case 'ipfs': {
-        const { refreshIpfsHistory } = await import('./sections/ipfs.js');
-        refreshIpfsHistory();
+        const { refreshIpfsAll } = await import('./sections/ipfs.js');
+        refreshIpfsAll();
         break;
       }
       case 'nodes': {

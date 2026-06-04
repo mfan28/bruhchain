@@ -33,3 +33,7 @@
 .account-status { font-size: 12px; font-weight: 600; }
 .account-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
 .ac-label { color: var(--text-muted); min-width: 80px; display: inline-block; }
+
+/* ─── IPFS Cluster ─── */
+#ipfsClusterStats .stat-card { cursor: default; }
+#ipfsPeersList .loading, #ipfsAllocationsList .loading { padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px; }

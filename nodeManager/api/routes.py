@@ -332,6 +332,40 @@ async def recent_transactions(limit: int = 20):
 
 # ─── IPFS ───────────────────────────────────────────────────
 
+import logging
+_log = logging.getLogger(__name__)
+
+
+@router.get("/ipfs/cluster/peers")
+async def ipfs_cluster_peers():
+    """Список пиров ipfs-cluster."""
+    try:
+        data = await ipfs.cluster_status()
+        return data
+    except Exception as e:
+        _log.error(f"Cluster peers error: {type(e).__name__}: {e}", exc_info=True)
+        raise HTTPException(502, f"Cluster unreachable: {type(e).__name__}: {e}")
+
+
+@router.get("/ipfs/cluster/allocations")
+async def ipfs_cluster_allocations():
+    """Файлы и на каких нодах лежат."""
+    try:
+        data = await ipfs.cluster_allocations()
+        return data
+    except Exception as e:
+        raise HTTPException(502, f"Cluster unreachable: {e}")
+
+
+@router.post("/ipfs/cluster/recover/{cid}")
+async def ipfs_cluster_recover(cid: str):
+    """Восстановить репликацию CID."""
+    try:
+        await ipfs.cluster_recover(cid)
+        return {"status": "ok", "cid": cid}
+    except Exception as e:
+        raise HTTPException(502, str(e))
+
 
 @router.get("/ipfs/{cid}")
 async def get_ipfs_file(cid: str):
@@ -354,17 +388,10 @@ async def upload_ipfs_file(file: UploadFile = File(...)):
 
 @router.get("/ipfs/info/{cid}")
 async def get_ipfs_file_info(cid: str):
-    """Получить метаинформацию о файле по CID."""
     try:
-        data = await ipfs.get_file(cid)
-        return {
-            "cid": cid,
-            "size": len(data),
-            "preview": data[:256].hex(),
-            "is_json": False,
-        }
+        return await ipfs.get_file_info(cid)
     except Exception as e:
-        raise HTTPException(404, str(e))
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 # ─── Nodes ──────────────────────────────────────────────────

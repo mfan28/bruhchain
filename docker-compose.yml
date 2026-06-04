@@ -30,41 +30,36 @@ services:
     image: ipfs/kubo:latest
     container_name: ipfs-node
     ports:
-      - "4001:4001"   # P2P
-      - "5001:5001"   # API
-      - "8080:8080"   # Gateway
+      - "4001:4001"
+      - "5001:5001"
+      - "8080:8080"
     environment:
-      - IPFS_PROFILE=server
-      - LIBP2P_FORCE_PNET=1                     # принудительно приватная сеть
-      - IPFS_BOOTSTRAP=${IPFS_BOOTSTRAP:-}       # свои пиры через запятую
+      - IPFS_SWARM_KEY_FILE=/swarm/swarm.key
     volumes:
       - ipfs_data:/data/ipfs
       - ./ipfs/staging:/export
-      - ./ipfs/swarm.key:/swarm/swarm.key:ro     # общий секрет сети
-      - ./ipfs/entrypoint.sh:/entrypoint.sh:ro   # кастомный entrypoint
-    entrypoint: ["/bin/sh", "/entrypoint.sh"]
-    healthcheck:
-      test: ["CMD", "ipfs", "id"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 20s   # даём время на init + запуск демона
+      - ./ipfs/swarm.key:/swarm/swarm.key
+      - ./ipfs/entrypoint.sh:/entrypoint.sh
+    entrypoint: ["/entrypoint.sh"]
 
   ipfs-cluster:
     image: ipfs/ipfs-cluster:latest
     container_name: ipfs-cluster
     ports:
+      - "9094:9094"   # Cluster API (HTTP)
       - "9095:9095"   # Cluster API (libp2p)
       - "9096:9096"   # Cluster REST API
     environment:
       - CLUSTER_IPFSHTTP_NODEMULTIADDRESS=/dns4/ipfs-node/tcp/5001
       - CLUSTER_RENDEZVOUS=blockchain-cluster
-      - CLUSTER_SECRET=${CLUSTER_SECRET:-}        # общий секрет кластера
-      - CLUSTER_PEER_ADDRESS=${CLUSTER_PEER_ADDRESS:-}
-      - CLUSTER_REPLICATION_FACTOR_MIN=1         # ровно 1 копия файла
-      - CLUSTER_REPLICATION_FACTOR_MAX=1         # без репликации
-      - CLUSTER_ALLOCATION_STRATEGY=descend_free_space  # на ноду с макс. местом
+      - CLUSTER_SECRET=${CLUSTER_SECRET:-}
+      - CLUSTER_REPLICATION_FACTOR_MIN=1
+      - CLUSTER_REPLICATION_FACTOR_MAX=1
+      - CLUSTER_ALLOCATION_STRATEGY=descend_free_space
       - CLUSTER_MONITOR_PINGINTERVAL=5s
+      - CLUSTER_CRDT_TRUSTEDPEERS=*
+      # REST API — на всех интерфейсах, порт 9096
+      - CLUSTER_RESTAPI_HTTPLISTENMULTIADDRESS=/ip4/0.0.0.0/tcp/9094
     volumes:
       - ipfs_cluster_data:/data/ipfs-cluster
     depends_on:

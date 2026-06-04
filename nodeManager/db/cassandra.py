@@ -22,7 +22,7 @@ class CassandraDB:
         # Считаем сколько нод в кластере
         peers = list(self.session.execute("SELECT peer FROM system.peers"))
         node_count = 1 + len(peers)  # 1 (себя) + пиры
-        rf = max(2, node_count)      # RF не меньше 2, даже если 1 нода
+        rf = max(1, node_count)      # RF не меньше 2, даже если 1 нода
 
         self.session.execute(f"""
             CREATE KEYSPACE IF NOT EXISTS blockchain

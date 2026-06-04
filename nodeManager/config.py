@@ -14,6 +14,10 @@ class Settings:
     IPFS_HOST: str = os.getenv("IPFS_HOST", "localhost")
     IPFS_PORT: int = int(os.getenv("IPFS_PORT", "5001"))
 
+    # IPFS Cluster
+    CLUSTER_HOST: str = os.getenv("CLUSTER_HOST", "localhost")
+    CLUSTER_PORT: int = int(os.getenv("CLUSTER_PORT", "9096"))
+
     # State DB (LevelDB)
     STATE_DB_PATH: str = os.getenv("STATE_DB_PATH", "/data/state.db")
 
