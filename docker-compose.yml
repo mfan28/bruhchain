@@ -41,6 +41,7 @@ services:
       - ./ipfs/swarm.key:/swarm/swarm.key
       - ./ipfs/entrypoint.sh:/entrypoint.sh
     entrypoint: ["/entrypoint.sh"]
+    network_mode: host
 
   ipfs-cluster:
     image: ipfs/ipfs-cluster:latest
