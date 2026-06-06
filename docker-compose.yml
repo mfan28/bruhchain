@@ -33,15 +33,11 @@ services:
       - "4001:4001"
       - "5001:5001"
       - "8080:8080"
-    environment:
-      - IPFS_SWARM_KEY_FILE=/swarm/swarm.key
     volumes:
-      - ipfs_data:/data/ipfs
+      - ./ipfs/ipfs_data:/data/ipfs
       - ./ipfs/staging:/export
-      - ./ipfs/swarm.key:/swarm/swarm.key
       - ./ipfs/entrypoint.sh:/entrypoint.sh
     entrypoint: ["/entrypoint.sh"]
-    network_mode: host
 
   ipfs-cluster:
     image: ipfs/ipfs-cluster:latest
