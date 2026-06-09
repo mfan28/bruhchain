@@ -1,2 +1,2 @@
-./ipfs/ipfs_data
-*/__pycache__/*
+/ipfs/ipfs_data
+/__pycache__/*
