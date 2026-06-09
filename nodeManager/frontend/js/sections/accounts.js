@@ -10,8 +10,8 @@ export async function refreshAccounts() {
     setEl('accountsOnline', '—');
 
     const list = $('allAccountsList');
-    if (accounts.length === 0) { show(list, '<div class="loading">No accounts yet</div>'); return; }
-    let html = '<table class="cassandra-table"><tr><th>Address</th><th>Nonce</th></tr>';
+    if (accounts.length === 0) { show(list, '<div class="loading">Аккаунтов ещё нет</div>'); return; }
+    let html = '<table class="cassandra-table"><tr><th>Адрес</th><th>Nonce</th></tr>';
     accounts.forEach(a => {
       html += `<tr>
         <td class="mono" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(a.address).slice(0,24)}…</td>
@@ -35,7 +35,7 @@ export async function lookupAccount() {
     </div>`;
     html += `<div class="account-card-body">
       <div><span class="ac-label">Nonce:</span> ${data.nonce ?? 0}</div>
-      <div><span class="ac-label">Data:</span> <pre class="mono" style="font-size:12px;max-height:200px;overflow:auto;">${escapeHtml(JSON.stringify(data, null, 2))}</pre></div>
+      <div><span class="ac-label">Данные:</span> <pre class="mono" style="font-size:12px;max-height:200px;overflow:auto;">${escapeHtml(JSON.stringify(data, null, 2))}</pre></div>
     </div>`;
     html += '</div>';
     show($('accountResult'), html);

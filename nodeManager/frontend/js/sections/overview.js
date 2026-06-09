@@ -13,14 +13,14 @@ export async function refreshAll() {
     setEl('statDifficulty', data.difficulty ?? '—');
     setEl('sidebarHeight', data.chain_height);
     setEl('sidebarPending', data.pending_txs);
-    setEl('statStatus', '● Healthy');
+    setEl('statStatus', '● Здорова');
     styleEl('statStatus', 'color', 'var(--green)');
-    setEl('liveIndicator', '● Live');
+    setEl('liveIndicator', '● В сети');
     styleEl('liveIndicator', 'color', 'var(--green)');
   } catch {
-    setEl('statStatus', '✖ Down');
+    setEl('statStatus', '✖ Недоступна');
     styleEl('statStatus', 'color', 'var(--red)');
-    setEl('liveIndicator', '✖ Down');
+    setEl('liveIndicator', '✖ Недоступна');
     styleEl('liveIndicator', 'color', 'var(--red)');
   }
   await loadRecentBlocks();
@@ -32,7 +32,7 @@ async function loadRecentBlocks() {
     const data = await apiGet('/blocks?limit=10&offset=0');
     const blocks = data.blocks || [];
     const list = $('recentBlocksList');
-    if (blocks.length === 0) { show(list, '<div class="loading">No blocks yet. Start mining!</div>'); return; }
+    if (blocks.length === 0) { show(list, '<div class="loading">Блоков ещё нет. Начните майнинг!</div>'); return; }
     const now = Math.floor(Date.now() / 1000);
     let html = '<div class="block-timeline">';
     blocks.forEach(b => {
@@ -48,7 +48,7 @@ async function loadRecentBlocks() {
     });
     html += '</div>';
     show(list, html);
-  } catch { show($('recentBlocksList'), '<div class="loading">Could not load blocks</div>'); }
+  } catch { show($('recentBlocksList'), '<div class="loading">Не удалось загрузить блоки</div>'); }
 }
 
 async function loadActivityChart() {
@@ -56,7 +56,7 @@ async function loadActivityChart() {
     const data = await apiGet('/blocks?limit=20&offset=0');
     const blocks = data.blocks || [];
     const chart = $('activityChart');
-    if (blocks.length === 0) { show(chart, '<div class="loading">No data yet...</div>'); return; }
+    if (blocks.length === 0) { show(chart, '<div class="loading">Пока нет данных...</div>'); return; }
     const maxTx = Math.max(1, ...blocks.map(b => b.tx_count || 0));
     const now = Math.floor(Date.now() / 1000);
     let html = '<div class="activity-chart">';
@@ -66,10 +66,10 @@ async function loadActivityChart() {
       html += `<div class="activity-bar activity-bar-block" style="height:${pct}px" title="#${b.height}: ${b.tx_count} TX, ${ago}"></div>`;
     });
     html += '</div><div class="activity-legend">';
-    html += '<span><div class="legend-dot" style="background:var(--green)"></div> Blocks</span>';
-    html += '<span style="color:var(--text-muted);font-size:10px;">↕ bar height = TX count</span></div>';
+    html += '<span><div class="legend-dot" style="background:var(--green)"></div> Блоки</span>';
+    html += '<span style="color:var(--text-muted);font-size:10px;">↕ высота столбца = кол-во TX</span></div>';
     show(chart, html);
-  } catch { show($('activityChart'), '<div class="loading">No data yet...</div>'); }
+  } catch { show($('activityChart'), '<div class="loading">Пока нет данных...</div>'); }
 }
 
 export function startAutoRefresh() {

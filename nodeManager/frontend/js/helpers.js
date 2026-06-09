@@ -45,11 +45,11 @@ export function formatTimeAgo(timestamp, now) {
   if (!timestamp) return '—';
   if (!now) now = Math.floor(Date.now() / 1000);
   const diff = now - timestamp;
-  if (diff < 5) return 'just now';
-  if (diff < 60) return diff + 's ago';
-  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
-  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-  return Math.floor(diff / 86400) + 'd ago';
+  if (diff < 5) return 'только что';
+  if (diff < 60) return diff + ' сек. назад';
+  if (diff < 3600) return Math.floor(diff / 60) + ' мин. назад';
+  if (diff < 86400) return Math.floor(diff / 3600) + ' ч. назад';
+  return Math.floor(diff / 86400) + ' дн. назад';
 }
 
 export function formatBytes(bytes) {

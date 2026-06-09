@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NodeManager — Blockchain Node</title>
+  <title>NodeManager — Блокчейн-нода</title>
   <link rel="stylesheet" href="/static/styles/base.css">
   <link rel="stylesheet" href="/static/styles/components.css">
   <link rel="stylesheet" href="/static/styles/sections.css">
@@ -12,31 +12,31 @@
 </head>
 <body>
   <div class="app">
-    <!-- Sidebar -->
+    <!-- Боковая панель -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo">
           <span class="logo-icon">⧫</span>
           <span class="logo-text">NodeManager</span>
         </div>
-        <span class="badge" id="chainStatus">● Live</span>
+        <span class="badge" id="chainStatus">● В сети</span>
       </div>
 
       <nav class="nav">
         <button class="nav-item active" data-section="overview">
-          <span class="nav-icon">📊</span> Overview
+          <span class="nav-icon">📊</span> Обзор
         </button>
         <button class="nav-item" data-section="transactions">
-          <span class="nav-icon">💳</span> Transactions
+          <span class="nav-icon">💳</span> Транзакции
         </button>
         <button class="nav-item" data-section="blocks">
-          <span class="nav-icon">🧱</span> Blocks
+          <span class="nav-icon">🧱</span> Блоки
         </button>
         <button class="nav-item" data-section="accounts">
-          <span class="nav-icon">👤</span> Accounts
+          <span class="nav-icon">👤</span> Аккаунты
         </button>
         <button class="nav-item" data-section="mining">
-          <span class="nav-icon">⛏️</span> Mining
+          <span class="nav-icon">⛏️</span> Майнинг
         </button>
         <button class="nav-item" data-section="ipfs">
           <span class="nav-icon">📦</span> IPFS
@@ -45,102 +45,102 @@
           <span class="nav-icon">🗄️</span> Cassandra
         </button>
         <button class="nav-item" data-section="nodes">
-          <span class="nav-icon">🌐</span> Nodes
+          <span class="nav-icon">🌐</span> Ноды
         </button>
       </nav>
 
       <div class="sidebar-footer">
         <div class="node-info">
-          <span class="label">Height</span>
+          <span class="label">Высота</span>
           <span class="value" id="sidebarHeight">0</span>
         </div>
         <div class="node-info">
-          <span class="label">Pending TX</span>
+          <span class="label">В ожидании TX</span>
           <span class="value" id="sidebarPending">0</span>
         </div>
       </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Основной контент -->
     <main class="main">
-      <!-- Overview Section -->
+      <!-- Секция: Обзор -->
       <section id="section-overview" class="section active">
         <div class="section-header">
-          <h1>Overview</h1>
+          <h1>Обзор</h1>
           <div class="header-actions">
-            <span class="live-indicator" id="liveIndicator">● Live</span>
-            <button class="btn btn-sm" onclick="refreshAll()">🔄 Refresh</button>
+            <span class="live-indicator" id="liveIndicator">● В сети</span>
+            <button class="btn btn-sm" onclick="refreshAll()">🔄 Обновить</button>
           </div>
         </div>
 
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-label">🧱 Chain Height</div>
+            <div class="stat-label">🧱 Высота цепи</div>
             <div class="stat-value" id="statHeight">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">💳 Pending TX</div>
+            <div class="stat-label">💳 TX в ожидании</div>
             <div class="stat-value" id="statPending">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">📦 Total TX</div>
+            <div class="stat-label">📦 Всего TX</div>
             <div class="stat-value" id="statTotalTxs">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">👤 Accounts</div>
+            <div class="stat-label">👤 Аккаунты</div>
             <div class="stat-value" id="statAccounts">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">🎯 Difficulty</div>
+            <div class="stat-label">🎯 Сложность</div>
             <div class="stat-value" id="statDifficulty">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">🔗 Node</div>
-            <div class="stat-value" id="statStatus">● Healthy</div>
+            <div class="stat-label">🔗 Нода</div>
+            <div class="stat-value" id="statStatus">● Здорова</div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h2>⏱ Recent Blocks</h2>
+            <h2>⏱ Последние блоки</h2>
           </div>
           <div class="card-body" id="recentBlocksList">
-            <div class="loading">Waiting for blocks...</div>
+            <div class="loading">Ожидание блоков...</div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h2>📊 Activity (last 20 blocks)</h2>
+            <h2>📊 Активность (последние 20 блоков)</h2>
           </div>
           <div class="card-body" id="activityChart">
-            <div class="loading">No data yet...</div>
+            <div class="loading">Пока нет данных...</div>
           </div>
         </div>
       </section>
 
-      <!-- Transactions Section -->
+      <!-- Секция: Транзакции -->
       <section id="section-transactions" class="section">
         <div class="section-header">
-          <h1>💳 Transactions</h1>
+          <h1>💳 Транзакции</h1>
           <div class="header-actions">
-            <button class="btn btn-sm" onclick="refreshTransactions()">🔄 Refresh</button>
+            <button class="btn btn-sm" onclick="refreshTransactions()">🔄 Обновить</button>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h2>📤 Send Transaction</h2>
+            <h2>📤 Отправить транзакцию</h2>
           </div>
           <div class="card-body">
             <form id="txForm" class="form">
               <div class="form-row">
                 <div class="form-group">
-                  <label>From Address</label>
+                  <label>Адрес отправителя</label>
                   <input type="text" id="txFrom" placeholder="0x..." class="input mono" required>
                 </div>
                 <div class="form-group">
-                  <label>To Address</label>
+                  <label>Адрес получателя</label>
                   <input type="text" id="txTo" placeholder="0x..." class="input mono" required>
                 </div>
               </div>
@@ -149,29 +149,29 @@
                   <label>Nonce</label>
                   <div style="display:flex;gap:8px;">
                     <input type="number" id="txNonce" value="0" class="input" style="flex:1;">
-                    <button type="button" class="btn btn-sm" onclick="fetchNonce()" title="Auto-fetch nonce from account">📡 Get</button>
+                    <button type="button" class="btn btn-sm" onclick="fetchNonce()" title="Автоматически получить nonce из аккаунта">📡 Получить</button>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label>Action</label>
+                  <label>Действие</label>
                   <select id="txAction" class="input" onchange="updatePayloadPreset()">
-                    <option value="send_message">Send Message</option>
-                    <option value="create_account">Create Account</option>
-                    <option value="update_profile">Update Profile</option>
-                    <option value="set_online">Set Online</option>
-                    <option value="set_offline">Set Offline</option>
+                    <option value="send_message">Отправить сообщение</option>
+                    <option value="create_account">Создать аккаунт</option>
+                    <option value="update_profile">Обновить профиль</option>
+                    <option value="set_online">Установить «В сети»</option>
+                    <option value="set_offline">Установить «Не в сети»</option>
                   </select>
                 </div>
               </div>
               <div class="form-group">
-                <label>Payload Data (JSON)</label>
-                <textarea id="txPayload" class="input mono" rows="3">{"message": "Hello blockchain!"}</textarea>
+                <label>Данные payload (JSON)</label>
+                <textarea id="txPayload" class="input mono" rows="3">{"message": "Привет, блокчейн!"}</textarea>
               </div>
               <div class="form-group">
-                <label>Signature</label>
+                <label>Подпись</label>
                 <input type="text" id="txSignature" placeholder="0x..." class="input mono">
               </div>
-              <button type="submit" class="btn btn-primary">Submit Transaction</button>
+              <button type="submit" class="btn btn-primary">Отправить транзакцию</button>
             </form>
             <div id="txResult" class="result-box" style="display:none"></div>
           </div>
@@ -179,23 +179,23 @@
 
         <div class="card">
           <div class="card-header">
-            <h2>📋 Recent Transactions</h2>
+            <h2>📋 Последние транзакции</h2>
           </div>
           <div class="card-body" id="recentTxList">
-            <div class="loading">Loading...</div>
+            <div class="loading">Загрузка...</div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h2>🔍 Lookup Transaction</h2>
+            <h2>🔍 Поиск транзакции</h2>
           </div>
           <div class="card-body">
             <div class="form-row">
               <div class="form-group" style="flex:1">
-                <input type="text" id="txLookupHash" placeholder="Transaction hash..." class="input mono">
+                <input type="text" id="txLookupHash" placeholder="Хеш транзакции..." class="input mono">
               </div>
-              <button class="btn" onclick="lookupTx()">🔍 Search</button>
+              <button class="btn" onclick="lookupTx()">🔍 Найти</button>
             </div>
             <div id="txLookupResult" class="result-box" style="display:none"></div>
           </div>
@@ -203,119 +203,119 @@
 
         <div class="card">
           <div class="card-header">
-            <h2>🧾 Transactions by Address</h2>
+            <h2>🧾 Транзакции по адресу</h2>
           </div>
           <div class="card-body">
             <div class="form-row">
               <div class="form-group" style="flex:1">
-                <input type="text" id="txAddress" placeholder="Enter wallet address..." class="input mono">
+                <input type="text" id="txAddress" placeholder="Введите адрес кошелька..." class="input mono">
               </div>
-              <button class="btn" onclick="lookupAddressTxs('recent')">🔍 Search</button>
+              <button class="btn" onclick="lookupAddressTxs('recent')">🔍 Найти</button>
             </div>
             <div id="txAddressResult" class="result-box" style="display:none"></div>
           </div>
         </div>
       </section>
 
-      <!-- Blocks Section -->
+      <!-- Секция: Блоки -->
       <section id="section-blocks" class="section">
         <div class="section-header">
-          <h1>🧱 Blocks</h1>
+          <h1>🧱 Блоки</h1>
           <div class="header-actions">
-            <button class="btn btn-sm" onclick="refreshBlocks()">🔄 Refresh</button>
+            <button class="btn btn-sm" onclick="refreshBlocks()">🔄 Обновить</button>
           </div>
         </div>
 
         <div class="stats-grid" id="blocksStats">
           <div class="stat-card">
-            <div class="stat-label">Total Blocks</div>
+            <div class="stat-label">Всего блоков</div>
             <div class="stat-value" id="blocksTotal">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Latest Height</div>
+            <div class="stat-label">Последняя высота</div>
             <div class="stat-value" id="blocksLatestHeight">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">⛏️ Last Miner</div>
+            <div class="stat-label">⛏️ Последний майнер</div>
             <div class="stat-value stat-hash" id="blocksLastMiner">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">⏱ Last Block</div>
+            <div class="stat-label">⏱ Последний блок</div>
             <div class="stat-value" id="blocksLastTime">—</div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h2>🔍 Search Blocks</h2>
+            <h2>🔍 Поиск блоков</h2>
           </div>
           <div class="card-body">
             <div class="form-row" style="margin-bottom:12px;align-items:center;">
               <div class="form-group" style="flex:0 0 200px;">
-                <label style="font-size:12px;color:var(--text-secondary);">By height</label>
+                <label style="font-size:12px;color:var(--text-secondary);">По высоте</label>
                 <div style="display:flex;gap:8px;margin-top:4px;">
-                  <input type="number" id="blockHeight" placeholder="Height..." class="input" style="flex:1;">
-                  <button class="btn" onclick="lookupBlock()">Go</button>
+                  <input type="number" id="blockHeight" placeholder="Высота..." class="input" style="flex:1;">
+                  <button class="btn" onclick="lookupBlock()">Перейти</button>
                 </div>
               </div>
               <div class="form-group" style="flex:1;">
-                <label style="font-size:12px;color:var(--text-secondary);">By hash</label>
+                <label style="font-size:12px;color:var(--text-secondary);">По хешу</label>
                 <div style="display:flex;gap:8px;margin-top:4px;">
-                  <input type="text" id="blockHashSearch" placeholder="Block hash..." class="input mono">
+                  <input type="text" id="blockHashSearch" placeholder="Хеш блока..." class="input mono">
                   <button class="btn" onclick="searchBlockByHash()">🔍</button>
                 </div>
               </div>
               <div id="blocksNav" style="display:flex;gap:8px;align-items:end;margin-left:auto;">
-                <button class="btn btn-sm" id="blocksPrevBtn" onclick="blocksPage('prev')" disabled>◀ Prev</button>
-                <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;" id="blocksPageInfo">Page 1</span>
-                <button class="btn btn-sm" id="blocksNextBtn" onclick="blocksPage('next')">Next ▶</button>
+                <button class="btn btn-sm" id="blocksPrevBtn" onclick="blocksPage('prev')" disabled>◀ Назад</button>
+                <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;" id="blocksPageInfo">Стр. 1</span>
+                <button class="btn btn-sm" id="blocksNextBtn" onclick="blocksPage('next')">Далее ▶</button>
               </div>
             </div>
             <div id="blocksList">
-              <div class="loading">Loading blocks...</div>
+              <div class="loading">Загрузка блоков...</div>
             </div>
           </div>
         </div>
 
         <div class="card" id="blockDetailCard" style="display:none;">
           <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
-            <h2 id="blockDetailTitle">Block Details</h2>
-            <button class="btn btn-sm" onclick="closeBlockDetail()">✕ Close</button>
+            <h2 id="blockDetailTitle">Детали блока</h2>
+            <button class="btn btn-sm" onclick="closeBlockDetail()">✕ Закрыть</button>
           </div>
           <div class="card-body" id="blockDetailBody"></div>
         </div>
       </section>
 
-      <!-- Accounts Section -->
+      <!-- Секция: Аккаунты -->
       <section id="section-accounts" class="section">
         <div class="section-header">
-          <h1>👤 Accounts</h1>
+          <h1>👤 Аккаунты</h1>
           <div class="header-actions">
-            <button class="btn btn-sm" onclick="refreshAccounts()">🔄 Refresh</button>
+            <button class="btn btn-sm" onclick="refreshAccounts()">🔄 Обновить</button>
           </div>
         </div>
 
         <div class="stats-grid" id="accountsStats">
           <div class="stat-card">
-            <div class="stat-label">Total Accounts</div>
+            <div class="stat-label">Всего аккаунтов</div>
             <div class="stat-value" id="accountsTotal">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">🟢 Online</div>
+            <div class="stat-label">🟢 В сети</div>
             <div class="stat-value" id="accountsOnline">—</div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h2>🔍 View Account</h2>
+            <h2>🔍 Просмотр аккаунта</h2>
           </div>
           <div class="card-body">
             <div class="form-row" style="margin-bottom:12px;">
               <div class="form-group" style="flex:1">
-                <input type="text" id="accountAddress" placeholder="Wallet address..." class="input mono">
+                <input type="text" id="accountAddress" placeholder="Адрес кошелька..." class="input mono">
               </div>
-              <button class="btn" onclick="lookupAccount()">🔍 Search</button>
+              <button class="btn" onclick="lookupAccount()">🔍 Найти</button>
             </div>
             <div id="accountResult" class="result-box" style="display:none"></div>
           </div>
@@ -323,54 +323,54 @@
 
         <div class="card">
           <div class="card-header">
-            <h2>📋 All Accounts</h2>
+            <h2>📋 Все аккаунты</h2>
           </div>
           <div class="card-body" id="allAccountsList">
-            <div class="loading">Loading...</div>
+            <div class="loading">Загрузка...</div>
           </div>
         </div>
       </section>
 
-      <!-- Mining Section -->
+      <!-- Секция: Майнинг -->
       <section id="section-mining" class="section">
         <div class="section-header">
-          <h1>⛏️ Mining</h1>
+          <h1>⛏️ Майнинг</h1>
           <div class="header-actions">
-            <button class="btn btn-sm" onclick="refreshMiningStats()">🔄 Refresh</button>
+            <button class="btn btn-sm" onclick="refreshMiningStats()">🔄 Обновить</button>
           </div>
         </div>
 
         <div class="stats-grid" id="miningStats">
           <div class="stat-card">
-            <div class="stat-label">🎯 Current Difficulty</div>
+            <div class="stat-label">🎯 Текущая сложность</div>
             <div class="stat-value" id="miningDifficulty">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">🧱 Total Blocks Mined</div>
+            <div class="stat-label">🧱 Всего блоков добыто</div>
             <div class="stat-value" id="miningTotalBlocks">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">💳 TX in Task</div>
+            <div class="stat-label">💳 TX в задаче</div>
             <div class="stat-value" id="miningTxCount">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">📡 Hashrate</div>
+            <div class="stat-label">📡 Хешрейт</div>
             <div class="stat-value" id="miningHashrate">—</div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h2>🎛️ Difficulty Control</h2>
+            <h2>🎛️ Управление сложностью</h2>
           </div>
           <div class="card-body">
             <div class="form-row" style="align-items:center;gap:16px;">
               <div class="form-group" style="flex:1;">
-                <label style="font-size:12px;color:var(--text-secondary);">Difficulty (1-20, higher = harder)</label>
+                <label style="font-size:12px;color:var(--text-secondary);">Сложность (1–20, выше = сложнее)</label>
                 <div style="display:flex;gap:8px;margin-top:4px;">
                   <input type="range" id="difficultySlider" min="1" max="20" value="5" style="flex:1;" oninput="document.getElementById('difficultyValue').textContent = this.value">
                   <span id="difficultyValue" style="font-weight:700;font-size:18px;min-width:30px;text-align:center;font-family:var(--font-mono)">5</span>
-                  <button class="btn btn-sm" onclick="setDifficulty()">Set</button>
+                  <button class="btn btn-sm" onclick="setDifficulty()">Установить</button>
                 </div>
               </div>
             </div>
@@ -380,15 +380,15 @@
 
         <div class="card">
           <div class="card-header">
-            <h2>🔥 One-Click Mining</h2>
+            <h2>🔥 Майнинг в один клик</h2>
           </div>
           <div class="card-body">
             <div class="form-group">
-              <label>Miner Address</label>
+              <label>Адрес майнера</label>
               <input type="text" id="minerAddress" placeholder="0x..." class="input mono" value="0xminer1">
             </div>
             <button class="btn btn-primary btn-lg" id="mineBtn" onclick="startMining()" style="width:100%;font-size:1.2rem;padding:1rem;">
-              ⛏️ START MINING
+              ⛏️ НАЧАТЬ МАЙНИНГ
             </button>
             <div id="miningStatus" class="result-box" style="display:none;margin-top:1rem"></div>
             <div class="mining-progress" id="miningProgress" style="display:none">
@@ -396,7 +396,7 @@
                 <div class="progress-fill" id="progressFill"></div>
               </div>
               <div class="progress-text">
-                <span id="hashrateText">0 hashes/s</span>
+                <span id="hashrateText">0 хешей/с</span>
                 <span id="nonceText">Nonce: 0</span>
               </div>
             </div>
@@ -405,134 +405,134 @@
         </div>
       </section>
 
-      <!-- IPFS Section -->
+      <!-- Секция: IPFS -->
       <section id="section-ipfs" class="section">
         <div class="section-header">
-          <h1>📦 IPFS Cluster</h1>
+          <h1>📦 IPFS-кластер</h1>
           <div class="header-actions">
-            <span class="live-indicator" id="ipfsLiveIndicator">● Connected</span>
-            <button class="btn btn-sm" onclick="refreshIpfsAll()">🔄 Refresh</button>
+            <span class="live-indicator" id="ipfsLiveIndicator">● Подключено</span>
+            <button class="btn btn-sm" onclick="refreshIpfsAll()">🔄 Обновить</button>
           </div>
         </div>
 
-        <!-- Cluster Stats -->
+        <!-- Статистика кластера -->
         <div class="stats-grid" id="ipfsClusterStats" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
           <div class="stat-card">
-            <div class="stat-label">Cluster Peers</div>
+            <div class="stat-label">Пиры кластера</div>
             <div class="stat-value" id="ipfsPeersCount">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Online</div>
+            <div class="stat-label">В сети</div>
             <div class="stat-value" id="ipfsPeersOnline" style="color:var(--green);">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Files (Allocations)</div>
+            <div class="stat-label">Файлы (размещения)</div>
             <div class="stat-value" id="ipfsAllocCount">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Cluster Status</div>
+            <div class="stat-label">Статус кластера</div>
             <div class="stat-value" id="ipfsClusterHealth" style="font-size:14px;">—</div>
           </div>
         </div>
 
-        <!-- Peers Card -->
+        <!-- Карточка пиров -->
         <div class="card">
           <div class="card-header">
-            <h2>🌐 Cluster Peers</h2>
+            <h2>🌐 Пиры кластера</h2>
           </div>
           <div class="card-body" id="ipfsPeersList">
-            <div class="loading">Loading peers...</div>
+            <div class="loading">Загрузка пиров...</div>
           </div>
         </div>
 
-        <!-- Allocations Card -->
+        <!-- Карточка размещений -->
         <div class="card">
           <div class="card-header">
-            <h2>📂 File Allocations</h2>
+            <h2>📂 Размещение файлов</h2>
             <div class="header-actions">
-              <input type="text" id="ipfsAllocFilter" placeholder="Filter by CID..." class="input mono" style="width:200px;font-size:12px;" oninput="renderIpfsAllocations()">
+              <input type="text" id="ipfsAllocFilter" placeholder="Фильтр по CID..." class="input mono" style="width:200px;font-size:12px;" oninput="renderIpfsAllocations()">
             </div>
           </div>
           <div class="card-body" id="ipfsAllocationsList">
-            <div class="loading">Loading allocations...</div>
+            <div class="loading">Загрузка размещений...</div>
           </div>
         </div>
 
-        <!-- Upload Card -->
+        <!-- Карточка загрузки -->
         <div class="card">
           <div class="card-header">
-            <h2>📤 Upload to Cluster</h2>
+            <h2>📤 Загрузить в кластер</h2>
           </div>
           <div class="card-body">
             <div class="ipfs-upload-zone" id="ipfsDropZone">
               <div class="ipfs-upload-icon">☁️</div>
-              <div class="ipfs-upload-text">Drop file here or click to browse</div>
-              <div class="ipfs-upload-hint">Any file type — stored via ipfs-cluster</div>
+              <div class="ipfs-upload-text">Перетащите файл сюда или нажмите для выбора</div>
+              <div class="ipfs-upload-hint">Любой тип файла — хранится через ipfs-cluster</div>
               <input type="file" id="ipfsFileInput" hidden>
             </div>
             <div id="ipfsUploadProgress" style="display:none;margin-top:12px;">
               <div class="progress-bar"><div class="progress-fill" id="ipfsUploadFill" style="width:0%"></div></div>
-              <div class="progress-text" style="margin-top:6px;"><span id="ipfsUploadStatus">Uploading...</span></div>
+              <div class="progress-text" style="margin-top:6px;"><span id="ipfsUploadStatus">Загрузка...</span></div>
             </div>
             <div id="ipfsUploadResult" class="result-box" style="display:none;margin-top:12px;"></div>
           </div>
         </div>
 
-        <!-- Lookup Card -->
+        <!-- Карточка получения -->
         <div class="card">
           <div class="card-header">
-            <h2>📥 Retrieve File</h2>
+            <h2>📥 Получить файл</h2>
           </div>
           <div class="card-body">
             <div class="form-row" style="margin-bottom:12px;">
               <div class="form-group" style="flex:1">
                 <label style="font-size:12px;color:var(--text-secondary);">CID</label>
-                <input type="text" id="ipfsCid" placeholder="Qm... or bafy..." class="input mono">
+                <input type="text" id="ipfsCid" placeholder="Qm... или bafy..." class="input mono">
               </div>
-              <button class="btn" onclick="lookupIpfs()" style="align-self:end;">🔍 Preview</button>
-              <button class="btn btn-warning" onclick="downloadIpfs()" style="align-self:end;">⬇ Download</button>
+              <button class="btn" onclick="lookupIpfs()" style="align-self:end;">🔍 Просмотр</button>
+              <button class="btn btn-warning" onclick="downloadIpfs()" style="align-self:end;">⬇ Скачать</button>
             </div>
             <div id="ipfsResult" class="result-box" style="display:none;"></div>
             <div id="ipfsImagePreview" style="display:none;margin-top:12px;text-align:center;">
-              <img id="ipfsPreviewImg" style="max-width:100%;max-height:400px;border-radius:var(--radius-sm);border:1px solid var(--border);" alt="IPFS image preview">
+              <img id="ipfsPreviewImg" style="max-width:100%;max-height:400px;border-radius:var(--radius-sm);border:1px solid var(--border);" alt="Предпросмотр изображения из IPFS">
             </div>
           </div>
         </div>
 
-        <!-- History Card -->
+        <!-- Карточка истории -->
         <div class="card" id="ipfsHistoryCard" style="display:none;">
           <div class="card-header">
-            <h2>📋 Upload History</h2>
-            <button class="btn btn-sm" onclick="clearIpfsHistory()">🗑 Clear</button>
+            <h2>📋 История загрузок</h2>
+            <button class="btn btn-sm" onclick="clearIpfsHistory()">🗑 Очистить</button>
           </div>
           <div class="card-body" id="ipfsHistoryList"></div>
         </div>
       </section>
 
-      <!-- Cassandra Section -->
+      <!-- Секция: Cassandra -->
       <section id="section-cassandra" class="section">
         <div class="section-header">
           <h1>🗄️ Cassandra</h1>
           <div class="header-actions">
-            <button class="btn btn-sm" onclick="refreshCassandra()">🔄 Refresh</button>
+            <button class="btn btn-sm" onclick="refreshCassandra()">🔄 Обновить</button>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h2>Browse Table</h2>
+            <h2>Просмотр таблицы</h2>
           </div>
           <div class="card-body">
             <div class="form-row">
               <div class="form-group" style="flex:1">
                 <select id="cassandraTable" class="input" onchange="loadCassandraTable()">
-                  <option value="">— Select table —</option>
+                  <option value="">— Выберите таблицу —</option>
                 </select>
               </div>
               <div class="form-group" style="flex:0 0 120px">
-                <input type="number" id="cassandraLimit" value="20" min="1" max="100" class="input" placeholder="Limit">
+                <input type="number" id="cassandraLimit" value="20" min="1" max="100" class="input" placeholder="Лимит">
               </div>
-              <button class="btn" onclick="loadCassandraTable()">📋 Load</button>
+              <button class="btn" onclick="loadCassandraTable()">📋 Загрузить</button>
             </div>
             <div id="cassandraResult" class="result-box" style="display:none"></div>
             <div id="cassandraError" style="display:none;margin-top:10px;color:var(--red);font-size:13px;"></div>
@@ -540,45 +540,45 @@
         </div>
       </section>
 
-      <!-- Nodes Section -->
+      <!-- Секция: Ноды -->
       <section id="section-nodes" class="section">
         <div class="section-header">
-          <h1>🌐 Nodes</h1>
+          <h1>🌐 Ноды</h1>
           <div class="header-actions">
-            <button class="btn btn-sm" onclick="refreshNodes()">🔄 Refresh</button>
+            <button class="btn btn-sm" onclick="refreshNodes()">🔄 Обновить</button>
           </div>
         </div>
 
         <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
           <div class="stat-card">
-            <div class="stat-label">Total Nodes</div>
+            <div class="stat-label">Всего нод</div>
             <div class="stat-value" id="nodesTotal">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Active Nodes</div>
+            <div class="stat-label">Активных нод</div>
             <div class="stat-value" id="nodesActive">—</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Self ID</div>
+            <div class="stat-label">Мой ID</div>
             <div class="stat-value stat-hash" id="nodesSelfId">—</div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h2>➕ Register New Node</h2>
+            <h2>➕ Зарегистрировать новую ноду</h2>
           </div>
           <div class="card-body">
             <div class="form-row">
               <div class="form-group" style="flex:0 0 120px">
-                <label style="font-size:12px;color:var(--text-secondary);">Node ID</label>
+                <label style="font-size:12px;color:var(--text-secondary);">ID ноды</label>
                 <input type="text" id="newNodeId" placeholder="node-xxx" class="input mono">
               </div>
               <div class="form-group" style="flex:1">
-                <label style="font-size:12px;color:var(--text-secondary);">API URL (http://host:port)</label>
+                <label style="font-size:12px;color:var(--text-secondary);">API-адрес (http://хост:порт)</label>
                 <input type="text" id="newNodeUrl" placeholder="http://192.168.1.100:8000" class="input mono">
               </div>
-              <button class="btn btn-primary" onclick="registerNode()" style="align-self:end;">➕ Add Node</button>
+              <button class="btn btn-primary" onclick="registerNode()" style="align-self:end;">➕ Добавить ноду</button>
             </div>
             <div id="nodeRegisterResult" class="result-box" style="display:none;margin-top:12px;"></div>
           </div>
@@ -586,11 +586,11 @@
 
         <div class="card">
           <div class="card-header">
-            <h2>📋 Known Nodes</h2>
+            <h2>📋 Известные ноды</h2>
           </div>
           <div class="card-body">
             <div id="nodesList">
-              <div class="loading">Loading nodes...</div>
+              <div class="loading">Загрузка нод...</div>
             </div>
           </div>
         </div>

@@ -19,21 +19,21 @@ export async function setDifficulty() {
   const diff = parseInt($('difficultySlider').value);
   try {
     const res = await apiPost('/mine/difficulty', { difficulty: diff });
-    show($('difficultyResult'), `✅ Difficulty set to ${res.difficulty}`);
+    show($('difficultyResult'), `✅ Сложность установлена: ${res.difficulty}`);
     setTimeout(() => hide($('difficultyResult')), 3000);
   } catch (e) { show($('difficultyResult'), '❌ ' + e.message); }
 }
 
 export async function startMining() {
   const minerAddr = $('minerAddress').value.trim();
-  if (!minerAddr) { show($('miningResult'), '❌ Enter a miner address'); return; }
+  if (!minerAddr) { show($('miningResult'), '❌ Введите адрес майнера'); return; }
   if (miningActive) {
-    miningActive = false; $('mineBtn').textContent = '⛏️ START MINING';
+    miningActive = false; $('mineBtn').textContent = '⛏️ НАЧАТЬ МАЙНИНГ';
     $('mineBtn').style.background = 'var(--accent)'; clearInterval(miningTimer);
-    show($('miningStatus'), '⏸️ Mining stopped'); $('miningProgress').style.display = 'none'; return;
+    show($('miningStatus'), '⏸️ Майнинг остановлен'); $('miningProgress').style.display = 'none'; return;
   }
   miningActive = true;
-  $('mineBtn').textContent = '⏹ STOP MINING'; $('mineBtn').style.background = 'var(--red)';
+  $('mineBtn').textContent = '⏹ ОСТАНОВИТЬ'; $('mineBtn').style.background = 'var(--red)';
   $('miningProgress').style.display = 'block'; $('progressFill').style.width = '0%';
   show($('miningStatus'), '📡 Fetching mining task...'); hide($('miningResult'));
   await mineBlock(minerAddr);
@@ -43,10 +43,10 @@ async function mineBlock(minerAddr) {
   try {
     const task = await apiGet('/mine/task');
     if (!task.transactions || task.transactions.length === 0) {
-      show($('miningStatus'), '⏳ No transactions. Waiting...');
+      show($('miningStatus'), '⏳ Нет транзакций. Ожидание...');
       setTimeout(() => { if (miningActive) mineBlock(minerAddr); }, 3000); return;
     }
-    show($('miningStatus'), `🧮 Mining ${task.transactions.length} tx(s) (difficulty: ${task.difficulty})...`);
+    show($('miningStatus'), `🧮 Майнинг ${task.transactions.length} транзакций (сложность: ${task.difficulty})...`);
     setEl('miningTxCount', task.transactions.length);
     const target = '0'.repeat(task.difficulty);
     let nonce = 0, hash = '', hashCount = 0;
@@ -67,7 +67,7 @@ async function mineBlock(minerAddr) {
         if (hash.startsWith(target)) {
           clearInterval(miningTimer);
           $('progressFill').style.width = '100%';
-          show($('miningStatus'), `🎯 Found nonce: ${nonce}`);
+          show($('miningStatus'), `🎯 Найден nonce: ${nonce}`);
           await submitBlock(task.task_id, nonce, minerAddr, task.timestamp); return;
         }
         nonce++;
@@ -78,7 +78,7 @@ async function mineBlock(minerAddr) {
     }
     clearInterval(miningTimer);
   } catch (e) {
-    miningActive = false; $('mineBtn').textContent = '⛏️ START MINING';
+    miningActive = false; $('mineBtn').textContent = '⛏️ НАЧАТЬ МАЙНИНГ';
     $('mineBtn').style.background = 'var(--accent)'; clearInterval(miningTimer);
     $('miningProgress').style.display = 'none'; show($('miningResult'), '❌ ' + e.message);
   }
@@ -87,14 +87,14 @@ async function mineBlock(minerAddr) {
 async function submitBlock(taskId, nonce, minerAddr, timestamp) {
   try {
     const res = await apiPost('/mine/submit', { task_id: taskId, nonce, miner_address: minerAddr, timestamp });
-    show($('miningResult'), '✅ Block mined!<br>' + jsonHighlight(res));
-    miningActive = false; $('mineBtn').textContent = '⛏️ START MINING'; $('mineBtn').style.background = 'var(--accent)';
+    show($('miningResult'), '✅ Блок добыт!<br>' + jsonHighlight(res));
+    miningActive = false; $('mineBtn').textContent = '⛏️ НАЧАТЬ МАЙНИНГ'; $('mineBtn').style.background = 'var(--accent)';
     const { refreshAll } = await import('./overview.js');
     refreshAll(); refreshMiningStats();
     setTimeout(() => {
-      if (!miningActive) { $('mineBtn').textContent = '⏹ STOP MINING'; $('mineBtn').style.background = 'var(--red)'; miningActive = true; mineBlock(minerAddr); }
+      if (!miningActive) { $('mineBtn').textContent = '⏹ ОСТАНОВИТЬ'; $('mineBtn').style.background = 'var(--red)'; miningActive = true; mineBlock(minerAddr); }
     }, 1000);
-  } catch (e) { show($('miningResult'), '❌ Submit failed: ' + e.message); miningActive = false; $('mineBtn').textContent = '⛏️ START MINING'; $('mineBtn').style.background = 'var(--accent)'; }
+  } catch (e) { show($('miningResult'), '❌ Ошибка отправки: ' + e.message); miningActive = false; $('mineBtn').textContent = '⛏️ НАЧАТЬ МАЙНИНГ'; $('mineBtn').style.background = 'var(--accent)'; }
 }
 
 // Expose for onclick

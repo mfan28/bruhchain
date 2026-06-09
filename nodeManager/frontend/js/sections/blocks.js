@@ -23,8 +23,8 @@ async function loadBlocksPage() {
   const listEl = $('blocksList');
   try {
     const data = await apiGet(`/blocks?limit=${BLOCKS_PAGE_SIZE}&offset=${blocksPageOffset}`);
-    if (data.count === 0) { show(listEl, '<div class="loading">No blocks yet</div>'); return; }
-    let html = '<table class="cassandra-table"><tr><th>Height</th><th>Hash</th><th>Miner</th><th>TXs</th><th>Time</th><th></th></tr>';
+    if (data.count === 0) { show(listEl, '<div class="loading">Блоков ещё нет</div>'); return; }
+    let html = '<table class="cassandra-table"><tr><th>Высота</th><th>Хеш</th><th>Майнер</th><th>TX</th><th>Время</th><th></th></tr>';
     data.blocks.forEach(b => {
       const time = new Date(b.timestamp * 1000).toLocaleString();
       html += `<tr onclick="window.showBlockFromList(${b.height})" style="cursor:pointer;">
@@ -46,7 +46,7 @@ async function loadBlocksPage() {
 
 export async function showBlockFromList(height) {
   try { showBlockDetail(await apiGet('/block/' + height)); }
-  catch (e) { $('blockDetailCard').style.display = 'block'; $('blockDetailTitle').textContent = `Block #${height}`;
+  catch (e) { $('blockDetailCard').style.display = 'block'; $('blockDetailTitle').textContent = `Блок #${height}`;
     show($('blockDetailBody'), `<div style="color:var(--red)">❌ ${e.message}</div>`); }
 }
 
@@ -60,7 +60,7 @@ export async function lookupBlock() {
   const height = $('blockHeight').value.trim();
   if (!height) return;
   try { showBlockDetail(await apiGet('/block/' + height)); }
-  catch (e) { $('blockDetailCard').style.display = 'block'; $('blockDetailTitle').textContent = `Block #${height}`;
+  catch (e) { $('blockDetailCard').style.display = 'block'; $('blockDetailTitle').textContent = `Блок #${height}`;
     show($('blockDetailBody'), `<div style="color:var(--red)">❌ ${e.message}</div>`); }
 }
 
@@ -68,7 +68,7 @@ export async function searchBlockByHash() {
   const hash = $('blockHashSearch').value.trim();
   if (!hash) return;
   try { showBlockDetail(await apiGet('/block/search/hash?hash=' + encodeURIComponent(hash))); }
-  catch (e) { $('blockDetailCard').style.display = 'block'; $('blockDetailTitle').textContent = 'Block';
+  catch (e) { $('blockDetailCard').style.display = 'block'; $('blockDetailTitle').textContent = 'Блок';
     show($('blockDetailBody'), `<div style="color:var(--red)">❌ ${e.message}</div>`); }
 }
 
@@ -79,20 +79,20 @@ function showBlockDetail(data) {
   $('blockDetailTitle').textContent = `Block #${data.height}`;
   const body = $('blockDetailBody');
   let html = '<div class="block-detail-grid">';
-  html += blockField('Height', `#${data.height}`, '🧱');
-  html += blockField('Hash', data.hash, '#');
-  html += blockField('Previous Hash', data.previous_hash, '⬅');
+  html += blockField('Высота', `#${data.height}`, '🧱');
+  html += blockField('Хеш', data.hash, '#');
+  html += blockField('Предыдущий хеш', data.previous_hash, '⬅');
   html += blockField('Merkle Root', data.merkle_root, '🌲');
   html += blockField('State Root', data.state_root, '🌳');
-  html += blockField('Timestamp', new Date(data.timestamp * 1000).toLocaleString(), '⏱');
-  html += blockField('Difficulty', data.difficulty, '🎯');
+  html += blockField('Время', new Date(data.timestamp * 1000).toLocaleString(), '⏱');
+  html += blockField('Сложность', data.difficulty, '🎯');
   html += blockField('Nonce', data.nonce?.toLocaleString() ?? '—', '🔢');
-  html += blockField('Miner', data.miner_address, '⛏️');
-  html += blockField('Transactions', data.tx_count + ' tx(s)', '💳');
+  html += blockField('Майнер', data.miner_address, '⛏️');
+  html += blockField('Транзакции', data.tx_count + ' шт.', '💳');
   html += '</div>';
   if (data.transactions && data.transactions.length > 0) {
-    html += '<h3 style="margin:16px 0 8px;font-size:14px;color:var(--text-secondary);">📋 Transactions</h3>';
-    html += '<table class="cassandra-table"><tr><th>Hash</th><th>From</th><th>To</th><th>Action</th></tr>';
+    html += '<h3 style="margin:16px 0 8px;font-size:14px;color:var(--text-secondary);">📋 Транзакции</h3>';
+    html += '<table class="cassandra-table"><tr><th>Хеш</th><th>Отправитель</th><th>Получатель</th><th>Действие</th></tr>';
     data.transactions.forEach(tx => {
       const action = tx.payload?.action || 'generic';
       html += `<tr><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;">${(tx.hash||'').slice(0,16)}…</td>

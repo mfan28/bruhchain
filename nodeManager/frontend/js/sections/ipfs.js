@@ -26,8 +26,8 @@ async function loadClusterPeers() {
     setEl('ipfsPeersCount', '❌');
     setEl('ipfsPeersOnline', '0');
     setEl('ipfsAllocCount', '—');
-    setEl('ipfsClusterHealth', '🔴 Down');
-    $('ipfsLiveIndicator').textContent = '● Disconnected';
+    setEl('ipfsClusterHealth', '🔴 Недоступен');
+    $('ipfsLiveIndicator').textContent = '● Отключено';
   }
 }
 
@@ -37,17 +37,17 @@ function renderClusterStats() {
   setEl('ipfsPeersCount', total);
   setEl('ipfsPeersOnline', online);
   setEl('ipfsAllocCount', clusterAllocs.length || '—');
-  setEl('ipfsClusterHealth', total > 0 ? `🟢 ${online}/${total} online` : '—');
-  $('ipfsLiveIndicator').textContent = online > 0 ? '● Connected' : '● Disconnected';
+  setEl('ipfsClusterHealth', total > 0 ? `🟢 ${online}/${total} в сети` : '—');
+  $('ipfsLiveIndicator').textContent = online > 0 ? '● Подключено' : '● Отключено';
 }
 
 function renderClusterPeers() {
   const list = $('ipfsPeersList');
   if (!clusterPeers || clusterPeers.length === 0) {
-    show(list, '<div class="loading">No peers in cluster</div>');
+    show(list, '<div class="loading">Пиров в кластере нет</div>');
     return;
   }
-  let html = '<table class="cassandra-table"><tr><th>Peer ID</th><th>Name</th><th>IPFS ID</th><th>Addresses</th><th>Status</th></tr>';
+  let html = '<table class="cassandra-table"><tr><th>ID пира</th><th>Имя</th><th>IPFS ID</th><th>Адреса</th><th>Статус</th></tr>';
   clusterPeers.forEach(p => {
     const peerId = (p.id || '').slice(0, 16) + '…';
     const ipfsId = (p.ipfs && p.ipfs.id ? p.ipfs.id : '').slice(0, 16) + '…';
@@ -55,7 +55,7 @@ function renderClusterPeers() {
       const parts = a.split('/');
       return parts.length > 2 ? parts[parts.length - 3] : a;
     }).join(', ') || '—';
-    const status = (p.error || p.ipfs_error || (p.ipfs && p.ipfs.error)) ? '🔴 Error' : '🟢 Online';
+    const status = (p.error || p.ipfs_error || (p.ipfs && p.ipfs.error)) ? '🔴 Ошибка' : '🟢 В сети';
     const name = p.peer_name || p.name || '—';
     html += `<tr>
       <td class="mono" style="font-size:11px;">${escapeHtml(peerId)}</td>
@@ -96,14 +96,14 @@ function renderIpfsAllocations() {
   }
 
   if (!filtered || filtered.length === 0) {
-    show(list, '<div class="loading">No allocations</div>');
+    show(list, '<div class="loading">Размещений нет</div>');
     return;
   }
 
   const peerNames = {};
   (clusterPeers || []).forEach(p => { peerNames[p.id || p.peer_id] = p.peer_name || p.name || (p.id || p.peer_id || '').slice(0, 12); });
 
-  let html = '<table class="cassandra-table"><tr><th>CID</th><th>Node</th><th>RF</th><th>Actions</th></tr>';
+  let html = '<table class="cassandra-table"><tr><th>CID</th><th>Нода</th><th>RF</th><th>Действия</th></tr>';
   filtered.slice(0, 100).forEach(a => {
     const cidStr = a.cid ? (typeof a.cid === 'object' ? (a.cid['/'] || JSON.stringify(a.cid)) : String(a.cid)) : '?';
     const allocs = a.allocations || a.allocators || [];
@@ -120,7 +120,7 @@ function renderIpfsAllocations() {
     </tr>`;
   });
   html += '</table>';
-  if (filtered.length > 100) html += `<div style="margin-top:8px;font-size:12px;color:var(--text-muted);">Showing 100 of ${filtered.length}</div>`;
+  if (filtered.length > 100) html += `<div style="margin-top:8px;font-size:12px;color:var(--text-muted);">Показано 100 из ${filtered.length}</div>`;
   show(list, html);
 }
 
@@ -145,21 +145,21 @@ export function initIpfsUpload() {
 async function uploadIpfsFile(file) {
   const fillEl = $('ipfsUploadFill');
   $('ipfsUploadProgress').style.display = 'block'; fillEl.style.width = '30%';
-  $('ipfsUploadStatus').textContent = `📤 Uploading ${file.name} (${formatBytes(file.size)})...`;
+  $('ipfsUploadStatus').textContent = `📤 Загрузка ${file.name} (${formatBytes(file.size)})...`;
   hide($('ipfsUploadResult'));
   try {
     const form = new FormData(); form.append('file', file);
     const res = await fetch(API + '/ipfs/upload', { method: 'POST', body: form });
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
-    fillEl.style.width = '100%'; $('ipfsUploadStatus').textContent = '✅ Upload complete!';
+    fillEl.style.width = '100%'; $('ipfsUploadStatus').textContent = '✅ Загрузка завершена!';
     show($('ipfsUploadResult'), `<div style="display:flex;flex-direction:column;gap:8px;">
-      <div><span style="color:var(--text-muted);">📄 File:</span> <strong>${escapeHtml(data.filename)}</strong></div>
+      <div><span style="color:var(--text-muted);">📄 Файл:</span> <strong>${escapeHtml(data.filename)}</strong></div>
       <div><span style="color:var(--text-muted);">📦 CID:</span> <span class="mono" style="color:var(--accent);font-size:13px;">${data.cid}</span></div>
-      <div><span style="color:var(--text-muted);">📏 Size:</span> ${formatBytes(data.size)}</div>
-      <div><span style="color:var(--text-muted);">Cluster:</span> <span style="color:var(--green);font-size:12px;">✅ Allocated</span></div>
+      <div><span style="color:var(--text-muted);">📏 Размер:</span> ${formatBytes(data.size)}</div>
+      <div><span style="color:var(--text-muted);">Кластер:</span> <span style="color:var(--green);font-size:12px;">✅ Размещён</span></div>
       <div style="margin-top:6px;">
-        <button class="btn btn-sm" onclick="navigator.clipboard.writeText('${data.cid}');this.textContent='✅ Copied!'">📋 Copy CID</button>
+        <button class="btn btn-sm" onclick="navigator.clipboard.writeText('${data.cid}');this.textContent='✅ Скопировано!'">📋 Копировать CID</button>
         <button class="btn btn-sm" onclick="document.getElementById('ipfsCid').value='${data.cid}';window.lookupIpfs();">🔍 Preview</button>
       </div>
     </div>`);
@@ -167,7 +167,7 @@ async function uploadIpfsFile(file) {
     saveIpfsHistory(data);
     await loadClusterAllocations();
   } catch (e) {
-    fillEl.style.width = '0%'; $('ipfsUploadStatus').textContent = '❌ Upload failed';
+    fillEl.style.width = '0%'; $('ipfsUploadStatus').textContent = '❌ Ошибка загрузки';
     show($('ipfsUploadResult'), '❌ ' + e.message);
   }
 }
@@ -182,7 +182,7 @@ export async function lookupIpfs() {
     const data = await apiGet('/ipfs/info/' + cid);
     let html = `<div style="margin-bottom:12px;display:flex;gap:16px;flex-wrap:wrap;">
       <span style="font-size:12px;color:var(--text-muted);">📦 CID: <span class="mono" style="color:var(--accent);">${escapeHtml(cid)}</span></span>
-      <span style="font-size:12px;color:var(--text-muted);">📏 Size: <strong>${formatBytes(data[data.length - 1].TotalSize)}</strong></span>
+      <span style="font-size:12px;color:var(--text-muted);">📏 Размер: <strong>${formatBytes(data[data.length - 1].TotalSize)}</strong></span>
     </div>`;
     show($('ipfsResult'), html);
     $('ipfsPreviewImg').src = API + '/ipfs/' + cid;
@@ -201,7 +201,7 @@ export async function downloadIpfs() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = cid;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-    show($('ipfsResult'), `✅ Downloaded ${formatBytes(blob.size)}`);
+    show($('ipfsResult'), `✅ Скачано ${formatBytes(blob.size)}`);
   } catch (e) { show($('ipfsResult'), '❌ ' + e.message); }
 }
 
@@ -220,7 +220,7 @@ function renderIpfsHistory() {
   const history = JSON.parse(localStorage.getItem('ipfs_history') || '[]');
   if (history.length === 0) { $('ipfsHistoryCard').style.display = 'none'; return; }
   $('ipfsHistoryCard').style.display = 'block';
-  let html = '<table class="cassandra-table"><tr><th>File</th><th>CID</th><th>Size</th><th></th></tr>';
+  let html = '<table class="cassandra-table"><tr><th>Файл</th><th>CID</th><th>Размер</th><th></th></tr>';
   history.forEach(h => {
     const cidStr = String(h.cid || '');
     html += `<tr>

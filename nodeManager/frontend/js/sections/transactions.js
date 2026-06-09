@@ -4,23 +4,23 @@ import { $, show, hide, escapeHtml, jsonHighlight, apiGet, apiPost } from '../he
 
 export async function fetchNonce() {
   const addr = $('txFrom').value.trim();
-  if (!addr) { alert('Enter From address first'); return; }
+  if (!addr) { alert('Сначала введите адрес отправителя'); return; }
   try {
     const data = await apiGet('/account/' + addr);
     $('txNonce').value = data.nonce;
-    show($('txResult'), `✅ Nonce fetched: ${data.nonce}`);
+    show($('txResult'), `✅ Nonce получен: ${data.nonce}`);
   } catch {
     $('txNonce').value = 0;
-    show($('txResult'), 'ℹ️ New account, nonce = 0');
+    show($('txResult'), 'ℹ️ Новый аккаунт, nonce = 0');
   }
 }
 
 export function updatePayloadPreset() {
   const action = $('txAction').value;
   const presets = {
-    send_message: '{"message": "Hello blockchain!"}',
-    create_account: '{"action": "create_account", "name": "MyName", "description": "My profile"}',
-    update_profile: '{"action": "update_profile", "name": "NewName"}',
+    send_message: '{"message": "Привет, блокчейн!"}',
+    create_account: '{"action": "create_account", "name": "МоёИмя", "description": "Мой профиль"}',
+    update_profile: '{"action": "update_profile", "name": "НовоеИмя"}',
     set_online: '{"action": "set_online"}',
     set_offline: '{"action": "set_offline"}',
   };
@@ -31,7 +31,7 @@ export function initTxForm() {
   $('txForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     let payload;
-    try { payload = JSON.parse($('txPayload').value); } catch { show($('txResult'), '❌ Invalid JSON'); return; }
+    try { payload = JSON.parse($('txPayload').value); } catch { show($('txResult'), '❌ Невалидный JSON'); return; }
     const body = {
       from: $('txFrom').value, to: $('txTo').value,
       nonce: parseInt($('txNonce').value), payload,
@@ -50,8 +50,8 @@ export async function refreshTransactions() {
     const data = await apiGet('/transactions/recent?limit=15');
     const txs = data.transactions || [];
     const list = $('recentTxList');
-    if (txs.length === 0) { show(list, '<div class="loading">No transactions yet</div>'); return; }
-    let html = '<table class="cassandra-table"><tr><th>Hash</th><th>From</th><th>To</th><th>Action</th><th>Block</th></tr>';
+    if (txs.length === 0) { show(list, '<div class="loading">Транзакций ещё нет</div>'); return; }
+    let html = '<table class="cassandra-table"><tr><th>Хеш</th><th>Отправитель</th><th>Получатель</th><th>Действие</th><th>Блок</th></tr>';
     txs.forEach(tx => {
       const action = tx.payload?.action || 'generic';
       html += `<tr>
@@ -64,7 +64,7 @@ export async function refreshTransactions() {
     });
     html += '</table>';
     show(list, html);
-  } catch { show($('recentTxList'), '<div class="loading">Could not load</div>'); }
+  } catch { show($('recentTxList'), '<div class="loading">Не удалось загрузить</div>'); }
 }
 
 export async function lookupTx() {
