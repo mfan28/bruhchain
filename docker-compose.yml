@@ -57,6 +57,7 @@ services:
       - CLUSTER_CRDT_TRUSTEDPEERS=*
       # REST API — на всех интерфейсах, порт 9096
       - CLUSTER_RESTAPI_HTTPLISTENMULTIADDRESS=/ip4/0.0.0.0/tcp/9094
+      - CLUSTER_LISTENMULTIADDRESS=/ip4/0.0.0.0/tcp/9096
     volumes:
       - ipfs_cluster_data:/data/ipfs-cluster
     depends_on:
