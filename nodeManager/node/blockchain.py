@@ -12,6 +12,7 @@ from models.schemas import (
 from node.mempool import mempool
 from node.state import state_trie
 from db.cassandra import db
+from node.p2p_client import p2p_client
 
 
 class Blockchain:
@@ -115,6 +116,7 @@ class Blockchain:
             await mempool.fail_transactions({t.hash for t in txs})
             self._current_task_id = None
             self._current_txs = []
+            await db.release_mining_lock(height)
             return False, "PoW verification failed"
 
         # PoW пройден — применяем транзакции к состоянию
@@ -132,6 +134,7 @@ class Blockchain:
                 await mempool.remove_transactions(bad_tx_hashes)
                 self._current_task_id = None
                 self._current_txs = []
+                await db.release_mining_lock(height)
                 return False, f"Bad nonce in tx {tx.hash} — removed from mempool"
 
         state_root = state_trie.get_state_root()
@@ -166,7 +169,6 @@ class Blockchain:
 
         # Снимаем блокировку и бродкастим всем пирам
         await db.release_mining_lock(height)
-        from node.p2p_client import p2p_client
         asyncio.create_task(p2p_client.broadcast_block(height, block.hash))
 
         return True, block.hash

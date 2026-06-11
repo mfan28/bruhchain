@@ -10,7 +10,6 @@ class Mempool:
     def __init__(self):
         self._transactions: dict[str, Transaction] = {}
         self._lock = asyncio.Lock()
-        # Событие — новые транзакции появились
         self._new_tx_event = asyncio.Event()
 
     async def add_transaction(self, tx: Transaction) -> bool:
@@ -39,13 +38,13 @@ class Mempool:
                 self._transactions.pop(h, None)
 
     async def remove_transactions(self, tx_hashes: set[str]):
-        """Удалить транзакции из mempool (например при невалидном nonce)."""
+        """Удалить транзакции из mempool"""
         async with self._lock:
             for h in tx_hashes:
                 self._transactions.pop(h, None)
 
     async def fail_transactions(self, tx_hashes: set[str]):
-        """Вернуть транзакции обратно в pending (если блок отклонён)."""
+        """Вернуть транзакции обратно в pending"""
         async with self._lock:
             for h in tx_hashes:
                 if h in self._transactions:
@@ -69,5 +68,4 @@ class Mempool:
             pass
 
 
-# singleton
 mempool = Mempool()

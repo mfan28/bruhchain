@@ -26,7 +26,6 @@ async def root():
     accounts = state_trie.get_all_accounts()
     chain_height = last_block.height if last_block else 0
     
-    # Get total TX count from Cassandra
     tx_count = 0
     if chain_height > 0:
         try:

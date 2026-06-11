@@ -22,7 +22,7 @@ class Settings:
     STATE_DB_PATH: str = os.getenv("STATE_DB_PATH", "/data/state.db")
 
     # Mining
-    MINING_DIFFICULTY: int = int(os.getenv("MINING_DIFFICULTY", "5"))  # leading zeros
+    MINING_DIFFICULTY: int = int(os.getenv("MINING_DIFFICULTY", "5")) 
     MAX_TX_PER_BLOCK: int = int(os.getenv("MAX_TX_PER_BLOCK", "100"))
     BLOCK_REWARD_ADDRESS: str = os.getenv("BLOCK_REWARD_ADDRESS", "")
 

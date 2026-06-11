@@ -319,7 +319,6 @@ class CassandraDB:
     async def acquire_mining_lock(self, height: int, node_id: str) -> bool:
         """
         Попытаться заблокировать высоту для майнинга.
-        Использует LWT (SERIAL + IF NOT EXISTS) — атомарно.
         Возвращает True если успешно (блокировка не занята).
         """
         now = int(time.time())
@@ -371,5 +370,4 @@ class CassandraDB:
         return None
 
 
-# singleton
 db = CassandraDB()

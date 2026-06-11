@@ -60,7 +60,7 @@ class MiningTask(BaseModel):
     """Задача для майнера."""
     task_id: str
     previous_hash: str
-    merkle_root: str  # <-- добавили merkle_root
+    merkle_root: str  
     transactions: list[Transaction]
     difficulty: int
     timestamp: int

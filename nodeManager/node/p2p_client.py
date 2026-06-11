@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 class P2PClient:
     """
     Лёгкий клиент для рассылки блоков всем пирам.
-    Принцип: отправил → ждём подтверждение → если нет, пир считается офлайн.
     """
 
     def __init__(self, timeout: float = 5.0):
@@ -47,8 +46,6 @@ class P2PClient:
                         logger.debug(f"Peer {peer.node_id} returned {resp.status_code}")
             except Exception as e:
                 logger.debug(f"Peer {peer.node_id} unreachable: {e}")
-                # Помечаем как неактивного?
-                # Можно будет добавить позже
 
         if sent:
             logger.info(f"Broadcast block #{height} to {sent}/{len(peers)} peers")
